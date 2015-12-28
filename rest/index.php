@@ -106,11 +106,29 @@ $app->get('/asset/{asset}', function(Silex\Application $app, $asset) {
 // POST
 $app->post('/add', function (Request $request) {
 
-    $message = $request->get('message');
+    $manufacturer = $request->get('manufacturer');
+    $model        = $request->get('model');
+    $description  = $request->get('description');
+    $serial       = $request->get('serial');
 
-    //mail('feedback@yoursite.com', '[YourSite] Feedback', $message);
+    try {
+        $dbcon = new PDO("mysql:host=localhost;dbname=oscar", "oscar", "dqXl4mEYW*1fA8uL");
+        $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    return new Response("Thank you for your feedback with message $message", 201);
+        $stmt = $dbcon->prepare( "INSERT INTO asset VALUES (NULL, :manufacturer, :model, :serial, :description, 1, 1, NOW(), NOW())" );
+        $stmt->bindParam(':manufacturer', $manufacturer);
+        $stmt->bindParam(':model',        $model);
+        $stmt->bindParam(':serial',       $serial);
+        $stmt->bindParam(':description',  $description);
+
+        $stmt->execute();
+        //$asset = $dbcon->lastInsertId();
+    } catch(PDOException $ex) {
+        return new Response("Unable to insert new asset. Error: " . $ex);
+    }
+
+    $conn = null;
+    return new Response("Inserted a new asset", 201);
 });
 
 
