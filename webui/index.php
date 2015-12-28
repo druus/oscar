@@ -15,13 +15,19 @@ session_start();
 /**
  * Retrieve any commands provided
  */
-$cmd = $_REQUEST['cmd'];
+if ( isset($_REQUEST['cmd']) ) {
+    $cmd = $_REQUEST['cmd'];
+} else {
+    $cmd = null;
+}
 
 /**
  * Load our configuration
  */
 require 'config/config.php';
+require 'classes/Asset.class.php';
 require 'classes/User.class.php';
+require 'classes/Utilities.class.php';
 
 /**
  * Include and register Twig
@@ -40,6 +46,9 @@ $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
 
+/**
+ * Respect the users wish to logout, so destroy the session and reload the page
+ */
 if ( $cmd == "logout" ) {
     session_destroy();
     header("Location: index.php");
@@ -56,37 +65,83 @@ if ( isset($_POST['submit']) && $cmd == "login" ) {
         $username = $_POST['username'];
         $password = $_POST['password'];
         $user = new User();
-        //if ( $username == "daniel" && $password == "an1974" ) {
-        if ( $user->login( $username, $password ) ) {
+        $userDetails = $user->login( $username, $password );
+        if ( $userDetails['id'] > 0 ) {
             $_SESSION['logged_in_user'] = $username;
+            $_SESSION['user_role']      = $userDetails['role'];
             $error = "";
+        } else {
+            $error = "Username or password is invalid.";
         }
     }
 }
 
 
+/**
+ * If not logged in, present the user with a login form
+ */
 if ( !isset($_SESSION['logged_in_user']) ) {
     $template = $twig->loadTemplate('login.tpl');
+    echo $template->render( array('error_msg' => $error ) );
 }
 else {
+
     /**
-     * Load a template
+     * Store some data in a useful variable...
      */
+    $cfgData = array(
+        'userName' => $_SESSION['logged_in_user'],
+        'userRole'  => $_SESSION['user_role'],
+    );
+
+    $dbcon = new PDO("mysql:host=localhost;dbname=oscar", "oscar", "dqXl4mEYW*1fA8uL");
+    $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+    // Get user details
+    $user = new User();
+
+    $asset = new Asset( $dbcon );
+
+    switch ( $cmd ) {
+        case "new":
+            $template = $twig->loadTemplate('asset.tpl');
+            $formTitle = "--New asset--";
+            echo $template->render( 
+                array( 'formTitle' => $formTitle,
+                       'cfgData'   => $cfgData 
+                ) );
+            break;
+        case "asset":
+            if ( isset($_REQUEST['asset']) ) {
+                $asset = $_REQUEST['asset'];
+            }
+
+            $assetData = array('asset' => $asset, 'manufacturer' => "Hewlett Packard", 'model' => "Blaha");
+            $template = $twig->loadTemplate('asset.tpl');
+            $formTitle ="Asset $asset";
+            echo $template->render(
+                array( 'formTitle' => $formTitle,
+                    'cfgData'   => $cfgData,
+                    'asset'   => $assetData,
+                ) );
+            break;
+
+        default:
+
+    $assetList = $asset->listAssets();
+
     $template = $twig->loadTemplate('main.tpl');
-}
 
-/**
- * Store some data in a useful variable...
- */
-$cfgData = array(
-    'userName' => $_SESSION['logged_in_user']
-);
 
-/**
- * Render the template
- */
-echo $template->render( array('name' => 'oscar',
+    /**
+     * Render the template
+     */
+    echo $template->render( array('name' => 'oscar',
                               'cfgData' => $cfgData,
-                              'error_msg' => $error) );
+                              'assetList' => $assetList,
+                              ) );
+
+    } // End of switch..
+}
 
 ?>

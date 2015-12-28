@@ -35,7 +35,7 @@ class User
     /**
      * Attempt to login the user with the supplied username and password
      *
-     * @return boolean - true if login is succesful, false otherwise
+     * @return array - an array with user details
      */
     function login( $username, $password )
     {
@@ -45,28 +45,26 @@ class User
             $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
-            $stmt = $dbcon->prepare( "SELECT COUNT(username) AS cnt FROM users WHERE username = :username AND password = SHA2(:password, 256)" );
+            $stmt = $dbcon->prepare( "SELECT id, username, role FROM users WHERE username = :username AND password = SHA2(:password, 256)" );
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':password', $password);
 
             $stmt->execute();
             $result = $stmt->fetchAll();
 
+            $userDetails = array();
             foreach ( $result as $key => $value ) {
-                $loginResult = $value->cnt;
+                 $userDetails['id']       = $value->id;
+                 $userDetails['username'] = $value->username;
+                 $userDetails['role']     = $value->role;
             }
 
-            if ( $loginResult == 1 ) {
-                $success = true;
-            } else {
-                $success = false;
-            }
         } catch(PDOException $ex) {
             return new Response("Unable to retrieve user details during login. Error: " . $ex);
         }
         $conn = null; 
 
-        return $success;
+        return $userDetails;
     } // EOM login()
 
 

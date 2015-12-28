@@ -13,7 +13,7 @@
           <li><a href="user_settings.php?cmd=chngpwd">Change password</a></li>
         </ul>
 {# Make the below block visible for administrators #}
-{% if cfgData.priv == "Admin" or cfgData.priv == "SuperUser" %}
+{% if cfgData.userRole == "Admin" %}
         <ul class="nav nav-sidebar">
             <li><a href="categoryadm.php">Categories</a></li>
             <li><a href="clientadm.php">Clients</a></li>
