@@ -23,12 +23,13 @@ class User
     var $db, $asset, $comment, $user, $isDbConnected = false;
 
     /**
-     * Connect to the database
+     * Constructor
      *
      * Establish a connection to the database using supplied connection details
      */
-    function dbConnect()
+    function User( $dbconnect )
     {
+        $this->db = $dbconnect;
     } // EOM dbConnect()
 
 
@@ -41,7 +42,8 @@ class User
     {
 
         try {
-            $dbcon = new PDO("mysql:host=localhost;dbname=oscar", "oscar", "dqXl4mEYW*1fA8uL");
+            //$dbcon = new PDO("mysql:host=localhost;dbname=oscar", "oscar", "dqXl4mEYW*1fA8uL");
+            $dbcon = $this->db;
             $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 

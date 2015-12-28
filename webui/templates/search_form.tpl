@@ -1,6 +1,6 @@
 
 <form method="post" action="">
-<input type="hidden" name="cmd" value="edit">
+<input type="hidden" name="cmd" value="asset">
 Enter asset number&nbsp;
 <input type="text" name="asset" value="" class="input-style">
 <input type="submit" value="Search">

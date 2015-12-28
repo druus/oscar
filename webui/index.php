@@ -55,6 +55,21 @@ if ( $cmd == "logout" ) {
 }
 
 /**
+ * Time to connect to the database
+ */
+try {
+    $dbcon = new PDO("mysql:host=$DBHOST;dbname=$DBNAME", $DBUSER, $DBPASSWD);
+    $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+} catch (PDOException $ex) {
+    $template = $twig->loadTemplate('error.tpl');
+    $error = "Unable to connect to the database. Error code: $ex";
+    echo $template->render( array('error_msg' => $error ) );
+    exit;
+}
+
+
+/**
  * Check if user is logged in, otherwise present a login form
  */
 if ( isset($_POST['submit']) && $cmd == "login" ) {
@@ -64,7 +79,7 @@ if ( isset($_POST['submit']) && $cmd == "login" ) {
     else {
         $username = $_POST['username'];
         $password = $_POST['password'];
-        $user = new User();
+        $user = new User( $dbcon );
         $userDetails = $user->login( $username, $password );
         if ( $userDetails['id'] > 0 ) {
             $_SESSION['logged_in_user'] = $username;
@@ -94,9 +109,6 @@ else {
         'userRole'  => $_SESSION['user_role'],
     );
 
-    $dbcon = new PDO("mysql:host=localhost;dbname=oscar", "oscar", "dqXl4mEYW*1fA8uL");
-    $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
     // Get user details
     $user = new User();
 
