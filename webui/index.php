@@ -58,7 +58,7 @@ if ( $cmd == "logout" ) {
  * Time to connect to the database
  */
 try {
-    $dbcon = new PDO("mysql:host=$DBHOST;dbname=$DBNAME", $DBUSER, $DBPASSWD);
+    $dbcon = new PDO("$DSNPREFIX:host=$DBHOST;dbname=$DBNAME", $DBUSER, $DBPASSWD);
     $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 } catch (PDOException $ex) {
