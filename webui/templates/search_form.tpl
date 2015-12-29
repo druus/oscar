@@ -77,7 +77,7 @@ Enter asset number&nbsp;
 
 {% for asset in assetList %}
 <tr>
-  <td>{{ asset.asset }}</td>
+  <td><a href="index.php?cmd=asset&amp;asset={{ asset.asset }}">{{ asset.asset }}</a></td>
   <td>{{ asset.manufacturer }}</td>
   <td>{{ asset.model }}</td>
 </tr>
