@@ -22,12 +22,21 @@ class Asset {
     function getAsset( $asset )
     {
 
-        $stmt = $this->db->prepare( "SELECT asset, manufacturer, model, serial, description, created, asset_modified FROM asset WHERE asset = :asset" );
-        $stmt->bindValue( "i", $asset );
+        if ( !is_numeric( $asset ) ) {
+            throw new Exception("Asset '$asset' is not a numerical value.");
+        }
 
-        $stmt->execute();
+        try {
+            $stmt = $this->db->prepare( "SELECT asset, manufacturer, model, serial, description, category, status, asset_entry_created, asset_modified FROM asset WHERE asset = :asset" );
+            $stmt->bindValue( ':asset', intval($asset), PDO::PARAM_INT );
 
-        return $stmt->fetchAll();
+            $stmt->execute();
+            $result = $stmt->fetch();
+        } catch (Exception $ex) {
+            throw new Exception("Unable to retrieve asset data. Error: $ex");
+        }
+
+        return $result;
 
     } // EOM getAsset()
 
@@ -49,6 +58,7 @@ class Asset {
         return $result;
 
     } // EOM listAssets()
+
 
 } //EOC Asset
 ?>

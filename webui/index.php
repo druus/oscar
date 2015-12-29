@@ -84,6 +84,8 @@ if ( isset($_POST['submit']) && $cmd == "login" ) {
         if ( $userDetails['id'] > 0 ) {
             $_SESSION['logged_in_user'] = $username;
             $_SESSION['user_role']      = $userDetails['role'];
+            // Update the login time
+            $user->loginTimestamp( $username );
             $error = "";
         } else {
             $error = "Username or password is invalid.";
@@ -109,51 +111,63 @@ else {
         'userRole'  => $_SESSION['user_role'],
     );
 
+    try {
     // Get user details
-    $user = new User();
+    $user = new User( $dbcon );
 
     $asset = new Asset( $dbcon );
+    $utils = new Utilities( $dbcon );
 
     switch ( $cmd ) {
         case "new":
-            $template = $twig->loadTemplate('asset.tpl');
-            $formTitle = "--New asset--";
+            $template   = $twig->loadTemplate('asset.tpl');
+            $cfgData['menuHighlight'] = "new_asset";
+            $formTitle  = "--New asset--";
+            $statusList = $utils->getStatus();
             echo $template->render( 
                 array( 'formTitle' => $formTitle,
-                       'cfgData'   => $cfgData 
+                       'cfgData'   => $cfgData,
+                       'statusList'=> $statusList,
                 ) );
             break;
         case "asset":
             if ( isset($_REQUEST['asset']) ) {
-                $asset = $_REQUEST['asset'];
-            }
+                $assetId = $_REQUEST['asset'];
 
-            $assetData = array('asset' => $asset, 'manufacturer' => "Hewlett Packard", 'model' => "Blaha");
-            $template = $twig->loadTemplate('asset.tpl');
-            $formTitle ="Asset $asset";
+            //$assetData = array('asset' => $asset, 'manufacturer' => "Hewlett Packard", 'model' => "Blaha", status => 4);
+            $template   = $twig->loadTemplate('asset.tpl');
+            $formTitle  = "Asset $assetId";
+            $statusList = $utils->getStatus();
+            $assetData  = $asset->getAsset( $assetId );
+
             echo $template->render(
                 array( 'formTitle' => $formTitle,
                     'cfgData'   => $cfgData,
                     'asset'   => $assetData,
+                    'statusList' => $statusList,
                 ) );
+            } else {
+                $template = $twig->loadTemplate('error.tpl');
+                echo $template->render( array() );
+            }
             break;
 
         default:
+            $cfgData['menuHighlight'] = "home";
+            $assetList = $asset->listAssets();
+            $template = $twig->loadTemplate('main.tpl');
 
-    $assetList = $asset->listAssets();
-
-    $template = $twig->loadTemplate('main.tpl');
-
-
-    /**
-     * Render the template
-     */
-    echo $template->render( array('name' => 'oscar',
+            echo $template->render( array('name' => 'oscar',
                               'cfgData' => $cfgData,
                               'assetList' => $assetList,
                               ) );
 
-    } // End of switch..
+        } // End of switch..
+
+    } catch (Exception $ex) {
+        echo "Oww, cr*p. Something didn't go very well: $ex";
+    }
+
 }
 
 ?>

@@ -67,7 +67,31 @@ class User
         $conn = null; 
 
         return $userDetails;
+
     } // EOM login()
+
+
+    /**
+     * Update timestamp for last login
+     *
+     * @var user The username affected
+     */
+    function loginTimestamp( $username )
+    {
+        if ( $username == null || strlen($username) < 2 ) {
+            throw new Exception("Not a valid username: '$username'.");
+        }
+
+        try {
+            $dbcon = $this->db;
+            $stmt  = $dbcon->prepare( "UPDATE users SET last_login = NOW() WHERE username = :username" );
+            $stmt->bindParam(':username', $username);
+            $stmt->execute();
+        } catch (Exception $ex) {
+            throw new Exception("Could not uptime timestamp for the user '$username'. Error message: $ex");
+        }
+
+    } // EOM loginTimestamp
 
 
     /**

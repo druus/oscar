@@ -131,13 +131,29 @@ class Utilities
     {
 
         $query = "SELECT stat_id id, status FROM status WHERE active = 'Yes' ORDER BY status";
-        $utildb = $this->getdb();
-        $res = $utildb->query( $query );
-        if ( $res == false ) {
-            echo "ERROR: " . $this->getdb()->error;
-        } else {
-            return $res->fetch_all(MYSQLI_ASSOC);
+
+        try {
+            //$dbcon = new PDO("mysql:host=localhost;dbname=oscar", "oscar", "dqXl4mEYW*1fA8uL");
+            $dbcon = $this->getdb();
+            $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+
+            $stmt = $dbcon->prepare( $query );
+
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+
+            $statusDetails = array();
+            foreach ( $result as $key => $value ) {
+                 $statusDetails['id']     = $value->id;
+                 $statusDetails['status'] = $value->status;
+            }
+
+        } catch(PDOException $ex) {
+            return "Unable to retrieve status details during login. Error: " . $ex;
         }
+
+        return $result;
 
     } // EOM getStatus()
 

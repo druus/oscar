@@ -3,10 +3,8 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="index.php">Home<span class="sr-only">(current)</span></a></li>
-            <li ><a href="?cmd=new">New Asset</a></li>
-            <li><a href="javascript:DisplayFloorLayout(0,0,0)">View Floor Plan</a></li>
-            <li ><a href="?cmd=search">Search</a></li>
+            <li {{ cfgData.menuHighlight == "home" ? "class='active'" : "" }}><a href="index.php">Home<span class="sr-only">(current)</span></a></li>
+            <li {{ cfgData.menuHighlight == "new_asset" ? "class='active'" : "" }}><a href="?cmd=new">New Asset</a></li>
           </ul>
 
         <ul class="nav nav-sidebar">
@@ -15,14 +13,14 @@
 {# Make the below block visible for administrators #}
 {% if cfgData.userRole == "Admin" %}
         <ul class="nav nav-sidebar">
-            <li><a href="categoryadm.php">Categories</a></li>
-            <li><a href="clientadm.php">Clients</a></li>
-            <li><a href="departmentadm.php">Departments</a></li>
-            <li><a href="sw_licenseadm.php">Software Licenses</a></li>
-            <li><a href="statusadm.php">Status Levels</a></li>
-            <li><a href="supplieradm.php">Suppliers</a></li>
-            <li><a href="?cmd=invoices">Invoices</a></li>
-            <li><a href="useradm.php">Users</a></li>
+            <li><a href="?cmd=admin&amp;module=categories">Categories</a></li>
+            <li><a href="?cmd=admin&amp;module=clients">Clients</a></li>
+            <li><a href="?cmd=admin&amp;module=departments">Departments</a></li>
+            <li><a href="?cmd=admin&amp;module=licenses">Software Licenses</a></li>
+            <li><a href="?cmd=admin&amp;module=status">Status Levels</a></li>
+            <li><a href="?cmd=admin&amp;module=suppliers">Suppliers</a></li>
+            <li><a href="?cmd=admin&amp;module=invoices">Invoices</a></li>
+            <li><a href="?cmd=admin&amp;module=users">Users</a></li>
         </ul>
 {% endif %}
 
@@ -30,13 +28,13 @@
             <li><a href="javascript:about();">About...</a></li>
         </ul>
 
-{% if cfgData.priv == false %}
+{% if cfgData.userRole == false %}
     <ul class="nav nav-sidebar">
-        <li><a href="login.php?cmd=login">Login</a></li>
+        <li><a href="index.php?cmd=login">Login</a></li>
     </ul>
 {% else %}
         <ul class="nav nav-sidebar">
-            <li><a href="login.php?cmd=logout">Logout</a></li>
+            <li><a href="index.php?cmd=logout">Logout</a></li>
         </ul>
 {% endif %}
 </div>

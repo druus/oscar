@@ -62,7 +62,7 @@
 	<TD>Asset</TD>
 	<TD>
 		<INPUT TYPE="text" SIZE="6" NAME="searchstring" CLASS="input-style" value="{{ asset.asset }}">
-		&nbsp;&nbsp;&nbsp;&nbsp;Productcode&nbsp;<input type="text" size="6" name="productcode" class="input-style" value="">
+		<!-- &nbsp;&nbsp;&nbsp;&nbsp;Productcode&nbsp;<input type="text" size="6" name="productcode" class="input-style" value=""> -->
 	</TD>
 
 	<TD>Introduction</TD>
@@ -118,6 +118,7 @@
 
 </tr>
 
+<!-- Disabled 2015-12-29 / DR 
 <tr>
     <td>Location</td>
     <td>
@@ -142,13 +143,11 @@
         <option value="1" >Windows XP EULA</option>
         <option value="4" >Windows XP OEM</option>
       </select>
-		<!-- <input type="text" name="license_type" size="20" class="input-style" value="" > -->
 	</td>
 </tr>
 <tr>
     <td>Parent computer</td>
     <td>
-        <!-- <input type="hidden" name="parent_computer" value="UK-224" > -->
         <input type="text" name="parent_computer" size="20" class="input-style" value="" >
         <a href="javascript:ViewCompDetails(document.asset.parent_computer.value);">[View]</a>&nbsp;
         <a href="javascript:ListComputers(0);">[List computers]</a>
@@ -159,6 +158,7 @@
 		<input type="text" name="license_key" size="30" class="input-style" value="" >
 	</td>
 </tr>
+-->
 
 <tr>
     <td><abbr title="Name of the principal user, if applicable">User</abbr></td>
@@ -176,13 +176,10 @@
     <td><abbr title="Each asset will be in a STATUS level, eg Active, Missing, Disposed">Status</abbr></td>
     <td>
         <select name="status" class="input-style">
-                <option value="2">Active</option>
-                <option value="4">Disposed</option>
-                <option value="6">In Storage</option>
-                <option value="3">Missing</option>
-                <option value="1">Not Specified</option>
-                <option value="7">Returned</option>
-                </select>
+            {% for status in statusList %}
+            <option value="{{ status.id }}" {% if asset.status == status.id %} {{"selected"}} {% endif %}>{{ status.status }}</option>
+            {% endfor %}
+        </select>
     </td>
 
     <td>&nbsp;</td>
@@ -193,7 +190,7 @@
 </tr>
 
 <tr>
-    <td><abbr title="Owner of the asset">Owner</abbr></td>
+    <td><abbr title="Owner of the asset (such as the company director or head of department)">Owner</abbr></td>
     <td>
     <select name="client" class="input-style"> 
       <option value="12" >Annette McCarthy</option>
@@ -210,7 +207,7 @@
 </TR>
 
 <tr>
-  <td><abbr title="Name of the person within AQE who is responsible for the asset.">Contact</abbr></td>
+  <td><abbr title="Name of the person who is responsible for the asset.">Contact</abbr></td>
   <td>
     <select name="owner" class="input-style"> 
       <option value="263" > </option>
@@ -241,7 +238,7 @@
     </select>
   </td>
 
-  <td><abbr title="AQ department the asset is assigned to.">Department</abbr></td>
+  <td><abbr title="Department the asset is assigned to.">Department</abbr></td>
   <td>
     <select name="dep_id" class="input-style"> 
       <option value="6" >Home</option>
@@ -251,18 +248,18 @@
   </td>
 </tr>
 
-<TR>
-	<TD>P.O. number</TD>
-	<TD>
-		<INPUT TYPE="text" NAME="po_number" SIZE="20" CLASS="input-style" value="">
+<tr>
+	<td><abbr title="If a purchase order exists for the asset, enter the number here.">P.O. number</abbr></td>
+	<td>
+		<input type="text" name="po_number" size="20" class="input-style" value="">
 		<a href="javascript:DisplayPurchaseOrder(document.asset.po_number.value);">[View PO items]</a>
-	</TD>
+	</td>
 	<td><abbr title="The suppliers invoice number">Suppliers invoice</abbr></td>
 
-	<TD>
-		<INPUT TYPE="text" NAME="manuf_invoice" CLASS="input-style" VALUE="">
-	</TD>
-</TR>
+	<td>
+		<input type="text" name="manuf_invoice" class="input-style" value="">
+	</td>
+</tr>
 <tr>
 	<td><abbr title="The suppliers product code/article number">Product code</abbr></td>
 	<td>
