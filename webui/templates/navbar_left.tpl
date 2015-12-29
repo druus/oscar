@@ -7,11 +7,15 @@
             <li {{ cfgData.menuHighlight == "new_asset" ? "class='active'" : "" }}><a href="?cmd=new">New Asset</a></li>
           </ul>
 
+<!-- Disabled as the feautre does not yet exist / 2015-12-29/DR
         <ul class="nav nav-sidebar">
           <li><a href="user_settings.php?cmd=chngpwd">Change password</a></li>
         </ul>
+-->
+
 {# Make the below block visible for administrators #}
 {% if cfgData.userRole == "Admin" %}
+<!-- Disabled as the features does not yet exist / 2015-12-29/DR
         <ul class="nav nav-sidebar">
             <li><a href="?cmd=admin&amp;module=categories">Categories</a></li>
             <li><a href="?cmd=admin&amp;module=clients">Clients</a></li>
@@ -23,7 +27,7 @@
             <li><a href="?cmd=admin&amp;module=users">Users</a></li>
         </ul>
 {% endif %}
-
+-->
         <ul class="nav nav-sidebar">
             <li><a href="javascript:about();">About...</a></li>
         </ul>
