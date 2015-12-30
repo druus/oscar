@@ -5,8 +5,9 @@
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 
-{# Include the search form #}
-{% include 'search_form.tpl' %}
+<h4>Oww, something went wrong!</h4>
+The error presented is:<br/>
+<pre>{{ error_msg }}</pre/>
 
 {% include 'footer.tpl' %}
 
