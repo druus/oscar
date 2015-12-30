@@ -27,7 +27,7 @@ class Asset {
         }
 
         try {
-            $stmt = $this->db->prepare( "SELECT asset, manufacturer, model, serial, description, category, status, asset_entry_created, asset_modified FROM asset WHERE asset = :asset" );
+            $stmt = $this->db->prepare( "SELECT asset, manufacturer, model, serial, description, category, status, comment, introduced, manuf_artno, supplier_artno, asset_entry_created, asset_modified FROM asset WHERE asset = :asset" );
             $stmt->bindValue( ':asset', intval($asset), PDO::PARAM_INT );
 
             $stmt->execute();

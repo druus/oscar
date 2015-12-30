@@ -65,10 +65,10 @@
 		<!-- &nbsp;&nbsp;&nbsp;&nbsp;Productcode&nbsp;<input type="text" size="6" name="productcode" class="input-style" value=""> -->
 	</TD>
 
-	<TD>Introduction</TD>
-	<TD>
-		<INPUT TYPE="text" NAME="introduced" CLASS="input-style" VALUE=""  >
-	</TD>
+	<td>Introduction</td>
+	<td>
+		<input type="text" name="introduced" class="input-style" value="{{ asset.introduced }}"  >
+	</td>
 </TR>
 
 <tr>
@@ -86,26 +86,16 @@
 <tr>
     <td><abbr title="Serial number of the asset, if applicable.">Serial No</abbr></td>
     <td>
-        <input type="text" name="serial" class="input-style" value="" >
+        <input type="text" name="serial" class="input-style" value="{{ asset.serial }}" >
     </td>
     <td><abbr title="Each asset should belong to a specified category, indicating roughly what the asset is, eg CD-ROM disk, computer hardware or similar.">Category</abbr></td>
     <td>
       <select name="category" class="input-style">
-              <option value="13">Book</option>
-              <option value="18">CD</option>
-              <option value="3">Computer</option>
-              <option value="7">Laptop</option>
-              <option value="16">Mobile phone</option>
-              <option value="11">Monitor</option>
-              <option value="17">Movie</option>
-              <option value="14">Network</option>
-              <option value="1">Not applicable</option>
-              <option value="5">Peripheral</option>
-              <option value="12">Phone</option>
-              <option value="6">Server</option>
-              <option value="4">Software</option>
-              <option value="19">Storage</option>
-            </select>
+      <option value="0">No category</option>
+      {% for category in categoryList %}
+      <option value="{{ category.id }}" {{ category.id == asset.category  ? "selected" : "" }}>{{ category.category }}</option>
+      {% endfor %}
+      </select>
 
     </td>
 </tr>
@@ -113,7 +103,7 @@
 <tr>
 	<td>Description</td>
 	<td colspan="3">
-		<input type="text" name="description" class="input-style" value="" size="80" >
+		<input type="text" name="description" class="input-style" value="{{ asset.description }}" size="80" >
 	</td>
 
 </tr>
@@ -176,9 +166,9 @@
     <td><abbr title="Each asset will be in a STATUS level, eg Active, Missing, Disposed">Status</abbr></td>
     <td>
         <select name="status" class="input-style">
-            {% for status in statusList %}
-            <option value="{{ status.id }}" {% if asset.status == status.id %} {{"selected"}} {% endif %}>{{ status.status }}</option>
-            {% endfor %}
+        {% for status in statusList %}
+        <option value="{{ status.id }}" {% if asset.status == status.id %} {{"selected"}} {% endif %}>{{ status.status }}</option>
+        {% endfor %}
         </select>
     </td>
 
@@ -197,6 +187,9 @@
       <option value="10" >Daniel Ruus</option>
     </select>
   </td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+<!-- Disabled 2015-12-29 / DR
   <TD>Active</TD>
   <TD>
     <SELECT NAME="active" CLASS="input-style"> 
@@ -204,37 +197,16 @@
       <OPTION VALUE="No">No
     </SELECT>
   </TD>
-</TR>
+-->
+</tr>
 
 <tr>
   <td><abbr title="Name of the person who is responsible for the asset.">Contact</abbr></td>
   <td>
     <select name="owner" class="input-style"> 
-      <option value="263" > </option>
-      <option value="121" >Alan McDermid</option>
-      <option value="264" >Annette McCarthy</option>
-      <option value="259" >Caroline WiltÃ©n</option>
-      <option value="258" >Charlotte Lindberg</option>
-      <option value="1" >Daniel Ruus</option>
-      <option value="245" >David Dickinson</option>
-      <option value="13" >Felim Whiteley</option>
-      <option value="262" >Hej Hopp</option>
-      <option value="22" >Iain Martin</option>
-      <option value="18" >Kermit The Frog</option>
-      <option value="192" >Mannen Muffel</option>
-      <option value="21" >Maria Garber</option>
-      <option value="246" >Mattia Mariotti</option>
-      <option value="248" >Michal Skonieczny</option>
-      <option value="249" >Michea Giuni</option>
-      <option value="247" >Nikita Chtcheglov</option>
-      <option value="261" >No Name</option>
-      <option value="6" >Roland Lansbergen</option>
-      <option value="254" >Sabina SÃ¶tnos</option>
-      <option value="257" >Sabina KÃ¤rlek</option>
-      <option value="235" >Simon Ledger</option>
-      <option value="91" >Stephen Innes</option>
-      <option value="215" >Tracy Maxwell</option>
-      <option value="19" >UKHelpdesk DOH</option>
+    {% for user in userList %}
+    <option value="{{ user.id }}">{{ user.name }}</option>
+    {% endfor %}
     </select>
   </td>
 
@@ -248,6 +220,7 @@
   </td>
 </tr>
 
+<!-- Disabled 2015-12-30 / DR
 <tr>
 	<td><abbr title="If a purchase order exists for the asset, enter the number here.">P.O. number</abbr></td>
 	<td>
@@ -260,6 +233,8 @@
 		<input type="text" name="manuf_invoice" class="input-style" value="">
 	</td>
 </tr>
+-->
+  
 <tr>
 	<td><abbr title="The suppliers product code/article number">Product code</abbr></td>
 	<td>
@@ -272,21 +247,21 @@
 	</td>
 </tr>
 
-
 <!-- Manufacturers product code -->
 <tr>
     <td><abbr title="The manufacturers product code/article number">Manufacturers artno</abbr></td>
     <td>
-        <input type="text" name="manuf_artno" size="20" class="input-style" value="">
+        <input type="text" name="manuf_artno" size="20" class="input-style" value="{{ asset.manuf_artno }}">
     </td>
-    <td><abbr title="The suppliers article number/product code">Suppliers artno</abbr></td>
+    <td><abbr title="The suppliers product code/article number">Suppliers artno</abbr></td>
     <td>
-        <input type="text" name="supplier_artno" size="20" class="input-style" value="">
+        <input type="text" name="supplier_artno" size="20" class="input-style" value="{{ asset.supplier_artno }}">
 
     </td>
 </tr>
 
 <!-- Barcode -->
+<!-- Disabled 2015-12-30 / DR
 <tr>
     <td><abbr title="The manufacturers barcode">Barcode</abbr></td>
     <td>
@@ -295,12 +270,13 @@
     <td>&nbsp;</td>
     <td>&nbsp;</td>
 </tr>
+-->
 <!-- End barcode -->
 
 <tr>
 	<td valign="top">Comments</td>
 	<td colspan=3>
-		<textarea rows="8" cols="100" name="comment" class="input-style"></textarea>
+		<textarea rows="8" cols="100" name="comment" class="input-style">{{ asset.comment }}</textarea>
 	</td>
 </tr>
 <!-- Display info about the user who created/modified the asset entry -->
@@ -319,12 +295,12 @@
 	<td>Creation time</td>
 	<td>
 
-		<input type="text" name="" size="22" class="input-style-protected" onFocus='javascript:blur();' value="" >
+		<input type="text" name="" size="22" class="input-style-protected" onFocus='javascript:blur();' value="{{ asset.asset_entry_created }}" >
 	</td>
 
 	<td>Modification time</td>
 	<td>
-		<input type="text" name="" size="22" class="input-style-protected" onFocus='javascript:blur();' value="" >
+		<input type="text" name="" size="22" class="input-style-protected" onFocus='javascript:blur();' value="{{ asset.asset_modified }}" >
 	</td>
 </tr>
 

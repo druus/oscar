@@ -122,12 +122,16 @@ else {
         case "new":
             $template   = $twig->loadTemplate('asset.tpl');
             $cfgData['menuHighlight'] = "new_asset";
-            $formTitle  = "--New asset--";
-            $statusList = $utils->getStatus();
+            $formTitle    = "--New asset--";
+            $statusList   = $utils->getStatus();
+            $categoryList = $utils->getCategories();
+            $userList     = $utils->getUsers();
             echo $template->render( 
-                array( 'formTitle' => $formTitle,
-                       'cfgData'   => $cfgData,
-                       'statusList'=> $statusList,
+                array( 'formTitle'    => $formTitle,
+                       'cfgData'      => $cfgData,
+                       'statusList'   => $statusList,
+                       'categoryList' => $categoryList,
+                       'userList'     => $userList,
                 ) );
             break;
         case "asset":
@@ -138,13 +142,17 @@ else {
             $template   = $twig->loadTemplate('asset.tpl');
             $formTitle  = "Asset $assetId";
             $statusList = $utils->getStatus();
+            $categoryList = $utils->getCategories();
+            $userList     = $utils->getUsers();
             $assetData  = $asset->getAsset( $assetId );
 
             echo $template->render(
                 array( 'formTitle' => $formTitle,
-                    'cfgData'   => $cfgData,
-                    'asset'   => $assetData,
-                    'statusList' => $statusList,
+                    'cfgData'      => $cfgData,
+                    'asset'        => $assetData,
+                    'statusList'   => $statusList,
+                    'categoryList' => $categoryList,
+                    'userList'     => $userList,
                 ) );
             } else {
                 $template = $twig->loadTemplate('error.tpl');

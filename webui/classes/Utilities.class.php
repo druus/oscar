@@ -111,13 +111,21 @@ class Utilities
     {
 
         $query = "SELECT id, category FROM category WHERE active = 'Yes' ORDER BY category";
-        $catdb = $this->getdb();
-        $res = $catdb->query( $query );
-        if ( $res == false ) {
-            echo "ERROR: " . $this->getdb()->error;
-        } else {
-            return $res->fetch_all(MYSQLI_ASSOC);
+
+        try {
+            $dbcon = $this->getdb();
+            $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+
+            $stmt = $dbcon->prepare( $query );
+
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            throw new Exception("Unable to retrieve list of categories. Error message: $ex");
         }
+
+        return $result;
 
     } // EOM getCategories()
 
@@ -156,6 +164,32 @@ class Utilities
         return $result;
 
     } // EOM getStatus()
+
+
+    /**
+     * Get a list of users
+     *
+     * @return array An array containing users
+     */
+    function getUsers()
+    {
+        $query = "SELECT id, name FROM users ORDER BY name";
+
+        try {
+            $dbcon = $this->getdb();
+            $dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $dbcon->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+
+            $stmt = $dbcon->prepare( $query );
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            throw new Exception("Unable to retrieve list of users. Error message: $ex");
+        }
+
+        return $result;
+
+    } // EOM getUsers()
 
 
     /**
