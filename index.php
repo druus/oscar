@@ -1,16 +1,29 @@
 <?php
+/******************************************************************************
+** Filename     index.php
+** Description  Main entry point
+** License      The MIT License (MIT) (See the file LICENSE)
+** Copyright (c) 2015, 2016 Daniel Ruus
+******************************************************************************/
+$APP_VERSION="0.1.0";
+$APP_AUTHOR="Daniel Ruus";
+$APP_MODIFIED="2016-07-27";
+
 session_start();
 
-// include and register Twig auto-loader
+/**
+ * Setup Twig, our templating engine
+ */
 include 'Twig/Autoloader.php';
 Twig_Autoloader::register();
+$loader = new Twig_Loader_Filesystem('views');
+// Initialize Twig environment
+$twig = new Twig_Environment($loader);
 
-$AR_VERSION="0.1.0";
-$AR_AUTHOR="Daniel Ruus";
-$AR_MODIFIED="2016-07-27";
+
 
 // Read the configuration file if exists
-include_once("./config/admin.conf.php");
+//include_once("./config/admin.conf.php");
 
 // Include required helper functions
 include_once("./include/dbfunctions.inc.php");
@@ -26,18 +39,37 @@ if (!isset($DBSERVER))
 
 ($_SERVER['REQUEST_METHOD'] == 'GET') ? $values = $_GET : $values = $_POST;
 
+// Read the configuration file config/config.ini.php and extract the
+// intresting bits
+// Read the configuration file
+
+if ( $settings = parse_ini_file("config/config.ini.php", true) ) {
+
+    $DBNAME   = $settings['database']['schema'];
+    $DBUSER   = $settings['database']['username'];
+    $DBPASSWD = $settings['database']['password'];
+    $DBSERVER = $settings['database']['host'];
+    $DBDRIVER = $settings['database']['driver'];
+
+} else {
+
+    $template = $twig->loadTemplate('error.tmpl');
+    echo $template->render( array(
+      'pageTitle' => "OSCAR - ERROR",
+      'error'     => "Unable to open the configuration file 'config/config.ini.php'"
+    ) );
+    // No point in continuing, kill ourself
+    die();
+
+}
+
+
 // Create a connection to the database
 $mydb = new mysqldb($DBSERVER, $DBNAME, $DBUSER, $DBPASSWD);
 if (! $mydb)
 	print_error("Unable to connect to database.<br/><b>MySQL error</b><br/>Errno: " . mysql_errno() . "<br/>Error: " . mysql_error(), "error");
 
 
-/**
- * Define the template directory location
- */
-$loader = new Twig_Loader_Filesystem('views');
-// initialize Twig environment
-$twig = new Twig_Environment($loader);
 
 
 /**
