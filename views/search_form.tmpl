@@ -1,0 +1,84 @@
+{% include 'header.tmpl' %}
+
+{% include 'navbar_top.tmpl' %}
+{# include 'navbar_left.tmpl' #}
+
+<!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+<div class="container col-sm-9 col-sm-offset-3">
+
+<div class="row">
+  <form class="form-inline" method="post" action="">
+  <input type="hidden" name="cmd" value="edit">
+
+  <div class="form-group">
+    <label for="asset">Enter asset number</label>
+    <input type="text" class="form-control" id="asset" name="asset" value="" placeholder="Enter asset">
+  </div>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+</div> {# End <div class="row">
+
+</div> {# End <div class="container"> #}
+
+<div class="row">
+
+<form class="form" method="post" action="">
+<input type="hidden" name="cmd" value="search_criteria">
+
+  <!-- Search on category -->
+  <div class="col-sm-6 col-lg-3">
+    <label for="search_category">Category</label>
+    <select name="search_category[]" id="search_category" class="form-control" multiple="true" size="8">
+    {% for category in categories %}
+      <option value="{{ category.id }}">{{ category.category }}</option>
+    {% endfor %}
+    </select>
+  </div>
+
+
+  <!-- Search on department -->
+  <div class="col-sm-6 col-lg-3">
+    <label for="search_department">Department</label>
+    <select name="search_department[]" id="search_department" class="form-control" multiple="true" size="8">
+    {% for department in departments %}
+     <option value="{{ department.id }}">{{ department.department }}</option>
+    {% endfor %}
+    </select>
+  </div>
+
+
+  <!-- Search on owner -->
+  <div class="col-sm-6 col-lg-3">
+    <label for="search_client">Owner/client</label>
+    <select name="search_client[]" id="search_client" class="form-control" multiple="true" size="8">
+      {% for client in clients %}
+        <option value="{{ client.id }}">{{ client.client }}</option>
+      {% endfor %}
+      </select>
+    </select>
+  </div>
+
+
+  <!-- Search on manufacturer -->
+  <div class="col-sm-6 col-lg-3">
+    <label for="search_manuf">Manufacturer</label>
+    <select name="search_manuf[]" id="search_manuf" class="form-control" multiple="true" size="8">
+    {% for manufacturer in manufacturers %}
+      <option value="{{ manufacturer.manufacturer }}">{{ manufacturer.manufacturer }}</option>
+    {% endfor %}
+    </select>
+  </div>
+
+</div> {# End <div class="row"> #}
+<div class="row">
+  <div class="col-xs-12">
+    <label for="search_text">Enter additional search text:</label>
+    <input type="text" name="search_text" id="search_text" class="form-style" size="40">
+    <button type="submit" class="btn btn-primary">Search</button>
+
+</div> {# End <div class="row"> #}
+
+</form>
+
+{% include 'footer.tmpl' %}

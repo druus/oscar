@@ -1,0 +1,281 @@
+body body blockquote, html body, body caption, body center, body dd, body dir, body div, body dl, body dt, body form, body li, body menu, body ol, body p, body pre, body td, body th, body tr, body ul {
+	font-family: Tahoma, Verdana, Arial, Universe, Univers, Helvetica, Sans-Serif;
+	font-size: 11px;
+}
+body {
+     color:#000000;
+     background-attachment: fixed;
+     background-repeat: no-repeat;
+     padding-top: 20px;
+}
+
+BODY ADDRESS {
+	line-height: 1.3;
+	margin: 0;
+	font-family: Verdana, Arial Narrow, Universe, Univers, Helvetica, Sans-Serif;
+	font-size: 10px;
+}
+
+BODY BIG {font-size: .85em}
+
+BODY BLOCKQUOTE {margin-top: .75em;
+line-height: 1.5;
+margin-bottom: .75em}
+
+HTML BODY {margin: 0.5em;
+line-height: 1.5}
+
+BODY CODE, BODY KBD, BODY SAMP, BODY TT {font-size: 80%}
+
+BODY DD {line-height: 1.2;
+margin: 0 0 0 5%}
+
+BODY DIV {margin: 0}
+
+BODY DL {margin: .8em 0}
+
+BODY DT {margin: .3em 0 0 0;
+line-height: 1.2}
+
+BODY FORM {margin: 0}
+
+BODY H1 {margin: .8em 0 0 ;
+line-height: 1.3;
+font-size: 1.75em}
+
+BODY H2 {margin: .8em 0 0 ;
+line-height: 1.3;
+font-size: 1.62em}
+
+BODY H3 {margin: .8em 0 0 ;
+line-height: 1.3;
+font-size: 1.52em}
+
+BODY H4 {margin: .8em 0 0 ;
+line-height: 1.3;
+font-size: 1.33em}
+
+BODY H5 {margin: .8em 0 0 ;
+line-height: 1.3;
+font-size: 1.15em}
+
+BODY H6 {margin: .8em 0 0 ;
+line-height: 1.3;
+font-size: 1em}
+
+BODY HR {margin: .6em}
+
+BODY LI {margin: .2em;
+		 font-size: 10px;}
+
+BODY OL {margin: 0 0 0 5%;
+line-height: 1.5}
+
+BODY P {margin: .6em 0;
+line-height: 1.5}
+
+BODY PRE {margin: .75em 0;
+line-height: 1.2;
+font-size: 1em}
+
+BODY SMALL {font-size: 80%}
+
+BODY SUB {font-size: 80%}
+
+BODY SUP {font-size: .85em}
+
+BODY TD {line-height: 1.3}
+
+BODY TH {line-height: 1.3}
+
+BODY UL, BODY DIR, BODY MENU {margin: 0 0 0 5%;
+line-height: 1.5}
+
+HTML {margin: 0; 
+padding: 0}
+
+/* Remove the below to remove the background from PREformatted text */
+
+BODY PRE {background: #ddd}
+
+/* Uncomment the below to remove the outdent from headings */
+
+/* 
+BODY H1, BODY H2, BODY H3, BODY H4, BODY H5, BODY H6 {margin-left: 0} 
+*/
+
+
+a:link {text-decoration: none; color: #0000FF;}
+a:visited {text-decoration: none; color: #0000FF;}
+a:active {text-decoration: none; color: #555555;}
+a:hover {text-decoration: underline; color: #FF3333;}
+
+.about {
+	line-height: 1.3;
+	margin: 0;
+	font-family: Verdana, Arial Narrow, Universe, Univers, Helvetica, Sans-Serif;
+	color: blue;
+	background: #e5ecf9;
+	font-size: 10px;
+	text-decoration: none;
+	border-left: 1px solid rgb(192,192,192);
+	border-right: 1px solid rgb(192,192,192);
+	border-top: 1px solid rgb(192,192,192);
+	border-bottom: 1px solid rgb(192,192,192);
+}
+
+.navMenu {
+	font-family: Tahoma, Verdana, Arial;
+	font-size: 11px;
+	color: #FFFFFF;
+	font-style: bold;
+	#background-color: #6495FF;
+}
+
+.navItem {
+	font-family: Tahoma, Verdana, Arial;
+	font-size: 11px;
+	font-style: none;
+	color: #FFCC99;
+}
+
+
+#whiteLink {
+	font-family: Tahoma, Verdana, Arial;
+	font-size: 11px;
+	color: #99CCFF;
+}
+
+#whiteLink:hover {
+	text-decoration: underline;
+	color: #FF3333;
+}
+
+.input-style
+{
+    font-family : MS San-Serif,Verdana,Arial,Helvetica;
+    font-size : 11px;
+    color : black;
+    background-color : #FFFFFF;
+    border-color : #000000;
+    border-style : solid;
+    border-width : 1px;
+    margin-left : 0px;
+    margin-top : 0px;
+
+}
+
+.input-style-protected
+{
+    font-family : MS San-Serif,Verdana,Arial,Helvetica;
+    font-size : 11px;
+    color : black;
+    background-color : #DDDDDD;
+    border-style : solid;
+    border-width : 1px;
+    margin-left : 0px;
+    margin-top : 0px;
+
+}
+
+.loggedin 
+{
+	line-height: 1.3;
+	margin: 0;
+	font-family: Verdana, Arial Narrow, Universe, Univers, Helvetica, Sans-Serif;
+	color: blue;
+	background: #fffeb3;
+	font-size: 10px;
+	text-decoration: none;
+	border-left: 1px solid rgb(192,192,192);
+	border-right: 1px solid rgb(192,192,192);
+	border-top: 1px solid rgb(192,192,192);
+	border-bottom: 1px solid rgb(192,192,192);
+}
+
+.history_comment
+{
+	font-family: Fixedsys;
+	font-size: 12px;
+}
+
+#dhtmltooltip{
+position: absolute;
+width: 150px;
+border: 1px solid black;
+padding: 2px;
+background-color: lightyellow;
+visibility: hidden;
+z-index: 100;
+/*Remove below line to remove shadow. Below line should always appear last within this CSS*/
+filter: progid:DXImageTransform.Microsoft.Shadow(color=gray,direction=135);
+}
+
+
+ul.Menu {
+	list-style-type: none;
+	color: #bbbbbb;
+	background: url(MenuBG.png) repeat-x;
+	position:absolute;
+	top:1px;
+	left: 1px;
+}
+ul.Menu li {
+	float: left;
+	width: 140px;
+}
+ul.Menu A:link {
+       text-decoration:none;
+       color:#ffffff;
+}
+ul.Menu A:visited {
+	  text-decoration:none;
+	  color:#efefef;
+}
+ul.Menu A:hover {
+	text-decoration:underline;
+	color:#fff709;
+}
+
+ul.SubMenu {
+	background-color: #ffffff;
+	border-color:#000000;
+	border-bottom-width:thin;
+	border-bottom-style:solid;
+	border-left-width:thick;
+	border-left-style:solid;
+	border-right-width:1px;
+	border-right-style:solid;
+}
+
+ul.SubMenu li {
+	float: none;
+	list-style-type: none;
+	width: 150px;
+	position: relative;
+	top: 2px;
+	left: -40px;
+	margin-top: 4px;
+	padding: 4px;
+}
+
+ul.SubMenu A:link {
+       text-decoration:none;
+       color:#0004a6;
+}
+ul.SubMenu A:visited {
+	  text-decoration:none;
+	  color:#00047c;
+}
+ul.SubMenu A:hover {
+	text-decoration:underline;
+	color:#0004a6;
+}
+
+ul.Menu li > ul {
+	display: none;
+}
+
+ul.Menu li:hover > ul {
+	display: block;
+}

@@ -1,0 +1,185 @@
+{% include 'header.tmpl' %}
+
+{%include 'navbar_top.tmpl' %}
+
+<div class="container">
+
+<h3 align="center">Edit Supplier</h3>
+<form action="index.php" method="post">
+<input type="hidden" name="cmd" value="admin-suppliers"/>
+<input type="hidden" name="subcmd" value="{{ formCmd }}"/>
+<input type="hidden" name="suppid" value="{{ suppliers.id }}"/>
+
+<table border="0" align="center">
+<tr bgcolor="#6780b8">
+	<td colspan="4"><font color="white">Supplier Details</font></td>
+</tr>
+<tr>
+	<td valign="top">Supplier</td>
+	<td colspan="3"><input type="text" name="supplier" class="input-style" size="32" value="{{ suppliers.supplier }}" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Description</td>
+	<td colspan="3"><textarea name="description" rows="3" cols="64" class="input-style" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'">{{ suppliers.description }}</textarea></td>
+</tr>
+
+<tr>
+	<td valign="top">Address</td>
+	<td colspan="3"><textarea name="address" rows="4" cols="64" class="input-style" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></textarea></td>
+</tr>
+
+<tr>
+	<td valign="top">City</td>
+	<td><input type="text" name="city" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top">Post Code</td>
+	<td><input type="text" name="post_code" class="input-style" size="12" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Country</td>
+	<td><input type="text" name="country" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td></td>
+	<td></td>
+</tr>
+
+<tr>
+	<td valign="top" nowrap>Telephone (main)</td>
+	<td><input type="text" name="telephone_main" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top" nowrap>Fax (main)</td>
+	<td><input type="text" name="fax_main" class="input-style" size="12" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top" nowrap>Email (main)</td>
+	<td><input type="text" name="email_main" class="input-style" size="40" value="{{ suppliers.email_main }}" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top" nowrap>Website</td>
+	<td><input type="text" name="website" class="input-style" size="40" value="{{ suppliers.website }}" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<!--***************************************************************************
+**
+** CONTACT DETAILS
+**
+****************************************************************************-->
+
+<tr bgcolor="#6780b8">
+	<td colspan="4"><font color="white">Contact Details</font></td>
+</tr>
+<tr>
+	<td valign="top">Contact Name</td>
+	<td><input type="text" name="contact_name_1" class="input-style" size="40" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top" colspan="2"><!--Preferred Contact?&nbsp;
+	<input type="checkbox" name="contact_name_1" class="input-style" size="40" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'">--></td>
+</tr>
+
+<tr>
+	<td valign="top">Job Title</td>
+	<td colspan="3"><input type="text" name="contact_title_1" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Telephone</td>
+	<td><input type="text" name="contact_tel_1" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top">Fax</td>
+	<td><input type="text" name="contact_fax_1" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Email</td>
+	<td colspan="3"><input type="text" name="contact_email_1" class="input-style" size="64" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<!--
+<tr bgcolor="#6780b8">
+	<td colspan="4"><font color="white">Contact Details (2nd contact)</font></td>
+</tr>
+<tr>
+	<td valign="top">Contact Name</td>
+	<td><input type="text" name="contact_name_2" class="input-style" size="40" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top" colspan="2">Preferred Contact?&nbsp;
+	<input type="checkbox" name="contact_name_2" class="input-style" size="40" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Job Title</td>
+	<td colspan="3"><input type="text" name="contact_title_2" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Telephone</td>
+	<td><input type="text" name="contact_tel_2" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top">Fax</td>
+	<td><input type="text" name="contact_fax_2" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Email</td>
+	<td colspan="3"><input type="text" name="contact_email_2" class="input-style" size="64" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+
+<tr bgcolor="#6780b8">
+	<td colspan="4"><font color="white">Contact Details (3rd contact)</font></td>
+</tr>
+<tr>
+	<td valign="top">Contact Name</td>
+	<td><input type="text" name="contact_name_3" class="input-style" size="40" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top" colspan="2">Preferred Contact?&nbsp;
+	<input type="checkbox" name="contact_name_3" class="input-style" size="40" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Job Title</td>
+	<td colspan="3"><input type="text" name="contact_title_3" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Telephone</td>
+	<td><input type="text" name="contact_tel_3" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+	<td valign="top">Fax</td>
+	<td><input type="text" name="contact_fax_3" class="input-style" size="32" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Email</td>
+	<td colspan="3"><input type="text" name="contact_email_3" class="input-style" size="64" value="" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+-->
+
+
+<!--
+<tr>
+	<td>License Type</td>
+	<td><select name="type" class="input-style" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'">
+	<OPTION VALUE="Not Specified">Not Specified</OPTION>
+	<OPTION VALUE="Commercial">Commercial</OPTION>
+	<OPTION VALUE="GPL">GPL</OPTION>
+	<OPTION VALUE="Open Source">Open Source</OPTION>
+	<OPTION VALUE="Freeware - Other">Freeware - Other</OPTION>
+	</select>
+	</td>
+</tr>
+
+<tr>
+	<td>Active?</td>
+	<td><select name="active" class="input-style" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'">
+	<OPTION VALUE="Yes" SELECTED>Yes</OPTION>
+	<OPTION VALUE="No">No</OPTION>
+	</SELECT>
+	</TD>
+</TR>
+-->
+
+<TR>
+	<TD COLSPAN="2"><INPUT TYPE="button" VALUE="Cancel" onClick="javascrpt:history.back(1);">&nbsp;<INPUT TYPE="submit" VALUE="Save">
+          <a href="index.php?cmd=admin-suppliers&subcmd=delete&suppid={{ suppliers.id }}" onClick="return confirmSubmit('Are you sure you want to delete this supplier?');">
+		<img src="images/delete_small.gif" border="0" alt="Delete Client">Delete Client </a>&nbsp;&nbsp;
+        </TD>
+</TABLE>
+</FORM>
+
+</div>
+
+{% include 'footer.tmpl' %}
+

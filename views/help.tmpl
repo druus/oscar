@@ -1,0 +1,31 @@
+{% include 'header.tmpl' %}
+
+{% include 'navbar_top.tmpl' %}
+
+
+<div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">About OSCAR</h3>
+  </div>
+  <div class="panel-body panel-danger">
+    {{ error }}
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading panel-info">
+    <h3 class="panel-title">Configuration</h3>
+  </div>
+  <div class="panel-body panel-info">
+    <h4>Database configuration</h4>
+    Database type: {{ cfgData.dbType }}<br/>
+    Database name: {{ cfgData.dbName }}<br/>
+    Database user: {{ cfgData.dbUser }}<br/>
+  </div>
+</div>
+
+</div>
+
+{% include 'footer.tmpl' %}

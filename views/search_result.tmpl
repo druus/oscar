@@ -1,0 +1,59 @@
+{% include 'header.tmpl' %}
+
+{% include 'navbar_top.tmpl' %}
+{# include 'navbar_left.tmpl' #}
+
+<!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+<div class="main">
+
+
+
+<!-- Query: SELECT DISTINCT(a.asset), a.manufacturer, a.model, a.description, c.category, d.dep_name AS department, a.original_location, a.network_port, a.computer_user
+FROM asset a, category c, aq_department d, clients o, asset_history h
+WHERE a.category = c.id
+AND a.owner_dep = d.dep_id
+AND a.client = o.cid
+AND a.asset = h.asset AND a.client IN (10)  AND (a.asset LIKE '%%' OR manufacturer LIKE '%%' OR model LIKE '%%' OR serial LIKE '%%' OR a.description LIKE '%%' OR a.comment LIKE '%%' OR computer_user LIKE '%%' OR parent_id LIKE '%%' OR h.comment LIKE '%%') ORDER BY asset -->
+
+<div class="table-responsive">
+
+<table class="table table-striped">
+<thead>
+<tr>
+  <td colspan="6">Found <b>{{ cfgData.searchCnt }}</b> entries matching the search criteria.</td>
+</tr>
+<tr bgcolor="#FF0000">
+  <td><b>Asset</b></td>
+  <td><b>Manufacturer</b></td>
+  <td><b>Model</b></td>
+  <td><b>Description</b></td>
+  <td><b>Category</b></td>
+  <td><b>Department</b></td>
+  </tr>
+</thead>
+
+<tbody>
+{% for asset in searchRes %}
+
+<!--<tr bgcolor="#D8D8D8" onmouseover="javascript:style.backgroundColor='#C1D2EE'" onmouseout="javascript:style.backgroundColor='#D8D8D8'">-->
+<tr>
+  <td align="center"><a href="index.php?cmd=edit&amp;asset={{ asset.asset }}">{{ asset.asset }}</a></td>
+  <td nowrap>{{ asset.manufacturer }}</td>
+  <td nowrap>{{ asset.model }}</td>
+  <td nowrap>{{ asset.description }}</td>
+  <td nowrap>{{ asset.category }}</td>
+  <td nowrap>{{ asset.department }}</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div> {# End <div class="table-responsive"> #}
+
+
+</div>
+
+{% include 'footer.tmpl' %}

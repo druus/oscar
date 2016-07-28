@@ -1,0 +1,77 @@
+{% include 'header.tmpl' %}
+
+<script>
+    $(function() {
+        var currentDate = new Date();
+        $( "#startdate" ).datepicker();
+        $( "#startdate" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+        $( "#enddate" ).datepicker();
+        $( "#enddate" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+    });
+    </script>
+
+{% include 'navbar_top.tmpl' %}
+{% include 'navbar_left.tmpl' %}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+<h4>Invoices</h4>
+
+<form method="get" name="invoicesearch" id="invoicesearch">
+<input type="hidden" name="cmd" value="invoicesearch"/>
+<table>
+<tr>
+  <!-- List suppliers -->
+  <td>
+    Select supplier/suppliers<br/>
+    <select name="search_supplier[]" class="input-style" multiple="true" size="8">
+    {% for supplier in suppliers %}
+      <option value="{{ supplier.id }}">{{ supplier.supplier }}</option>
+    {% endfor %}
+    </select>
+
+  </td>
+  <td valign="top">Start date<br/> <input type="text" name="startdate" id="startdate" value="" size="11"/> </td>
+  <td valign="top">End date<br/>   <input type="text" name="enddate" id="enddate" value="" size="11"/></td>
+</tr>
+</table>
+<input type="submit" value="Search invoices" />
+</form>
+
+<hr/>
+<p>Choosen supplier/suppliers</p>
+{%for choosen in choosenSuppliers %}
+  {{ choosen }} <br/>
+{% endfor %}
+
+<p>Start date: {{ startdate }}</p>
+<p>End date: {{ enddate }}</p>
+
+
+<h4>Invoices</h4>
+
+<table border="1" cellpadding="3" cellspacing="5">
+<tr>
+  <td>Invoice no</td>
+  <td>Supplier</td>
+  <td>Description</td>
+  <td>Ordered by</td>
+  <td>Order date</td>
+  <td>Suppliers invoice no</td>
+</tr>
+{% for invoice in invoices %}
+<tr>
+  <td>{{ invoice.invoice_no }}</td>
+  <td>{{ invoice.supplier }}</td>
+  <td>{{ invoice.description }}</td>
+  <td>{{ invoice.ordered_by }}</td>
+  <td>{{ invoice.order_date }}</td>
+  <td>{{ invoice.supplier_invoice_no }}</td>
+</tr>
+{% endfor %}
+</table>
+
+</div>
+
+{% include 'footer.tmpl' %}
+

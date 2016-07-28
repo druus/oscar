@@ -1,0 +1,23 @@
+{% include 'header.tmpl' %}
+
+{% include 'navbar_top.tmpl' %}
+
+
+<div>
+
+<h1>Error</h1>
+
+<div class="alert alert-danger" role="alert">OK, something didn't go according to plan, that's for sure!</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">An error occurred</h3>
+  </div>
+  <div class="panel-body panel-danger">
+    {{ error }}
+  </div>
+</div>
+
+</div>
+
+{% include 'footer.tmpl' %}
