@@ -14,10 +14,15 @@ $dir = basename(dirname($_SERVER['PHP_SELF']),"/");
 // Read in the database configurations. Depending on which path is currently used,
 // amend the search path for the conf file.
 if ($dir == "admin")
-	require_once("../config/admin.conf.php");
+		$configFile = "../config/admin.conf.php";
 else
-	require_once("config/admin.conf.php");
+		$configFile = "config/admin.conf.php";
 
+
+if (! include_once $configFile ) {
+		echo "<h1>Error</h1>\n<p>Error: unable to open ''" . $configFile . "''.</p>\n<p>Can't continue until the file is available, so quitting now.</p>\n";
+		die();
+}
 
 // Create a connection to the database
 $auth = @mysql_connect($DBSERVER, $DBUSER, $DBPASSWD);
