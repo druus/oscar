@@ -1,1 +1,6 @@
-webui/config/config.php
+# Exclude the database connection details
+config/admin.conf.php
+config/asset.conf.php
+config/auth.conf.php
+config/config.ini.php
+asset_images/*
