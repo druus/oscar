@@ -5,7 +5,7 @@
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.1.0";
+$APP_VERSION="0.3.0";
 $APP_AUTHOR="Daniel Ruus";
 $APP_MODIFIED="2016-07-27";
 
