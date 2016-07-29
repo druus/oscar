@@ -7,7 +7,7 @@
 ******************************************************************************/
 $APP_VERSION="0.3.2";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2016-07-27";
+$APP_MODIFIED="2016-07-29";
 
 session_start();
 
@@ -138,8 +138,10 @@ switch ($values['cmd'])
     case "help":
         $template = $twig->loadTemplate('help.tmpl');
         echo $template->render(array(
-          'pageTitle' => 'OSCAR - Help',
-          'cfgData'   => $cfgData
+          'pageTitle'   => 'OSCAR - Help',
+					'appVersion'  => $APP_VERSION,
+					'appModified' => $APP_MODIFIED,
+          'cfgData'     => $cfgData
         ));
         break;
 
