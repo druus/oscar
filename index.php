@@ -29,6 +29,7 @@ $twig = new Twig_Environment($loader);
 include_once("./include/dbfunctions.inc.php");
 //include_once("./include/functions.inc.php");
 include_once("classes/Asset.class.php");
+include_once("classes/Authenticate.class.php");
 include_once("classes/DbHandler.class.php");
 include_once("classes/AdminUtils.class.php");
 require("./include/authenticate.inc.php");
@@ -75,7 +76,12 @@ if (! $mydb)
 /**
  * Check if the user is logged in or not
  */
-$priv = authenticate();
+//$priv = authenticate();
+$priv = false;
+if ( isset($_SESSION['username']) && isset($_SESSION['password']) ) {
+	$auth = new Authenticate();
+	$priv = $auth->authenticate( $_SESSION['username'], $_SESSION['password'] );
+}
 
 /**
  * Test to load data before the asset form is displayed in preparation of using templates
