@@ -95,6 +95,53 @@ class DbHandler {
 
     } // EOM getLatestAsset();
 
+
+    /**
+     * Get data for a given asset
+     * @return array
+     */
+    function getAssetData( $asset )
+    {
+      if ( ! is_numeric( $asset ) ) {
+        throw new Exception( "Asset '$asset' is not a numerical value");
+      } else {
+
+        try {
+          $stmt = $this->dbh->prepare("SELECT asset, productcode, manufacturer, model, serial, description, category, client, active, introduced, status, owner_dep, owner_name, po_number, supplier, manuf_invoice, manuf_artno, supplier_artno, barcode, comment, user, asset_entry_created, asset_entry_created_by, asset_modified, asset_modified_by FROM asset WHERE asset = :asset LIMIT 1");
+          $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
+
+          if ( $stmt->execute() ) {
+            $assetData = $stmt->fetch();
+            if ( is_numeric( $assetData['asset'] ) && $assetData['asset'] > 0 ) {
+              return $assetData;
+            } else {
+              throw new Exception( "Asset '$asset' not found.");
+            }
+          }
+        } catch (Exception $e) {
+          throw new Exception($e->getMessage());
+        }
+      }
+
+      return false;
+
+    } // EOM getAssetData()
+
+    /**
+     * Retrieve a list of categories
+     * @return array
+     */
+    function categories()
+    {
+        $stmt = $this->dbh->prepare("SELECT id, category FROM category WHERE active = 'Yes' ORDER BY category");
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM categories()
+
     /**
      * Retrieve a list of clients
      * @return array
@@ -109,6 +156,66 @@ class DbHandler {
         return false;
 
     } // EOM clients()
+
+    /**
+     * Retrieve a list of departments
+     * @return array
+     */
+    function departments()
+    {
+        $stmt = $this->dbh->prepare("SELECT dep_id AS id, dep_name AS department FROM departments WHERE active='Yes' ORDER BY dep_name");
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM departments()
+
+    /**
+     * Retrieve a list of manufacturers
+     * @return array
+     */
+    function manufacturers()
+    {
+        $stmt = $this->dbh->prepare("SELECT DISTINCT(manufacturer) FROM asset ORDER BY manufacturer");
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM manufacturers()
+
+    /**
+     * Retrieve a list of status codes
+     * @return array
+     */
+    function status()
+    {
+        $stmt = $this->dbh->prepare("SELECT stat_id id, status FROM status WHERE active = 'Yes' ORDER BY status");
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM status()
+
+    /**
+     * Retrieve a list of suppliers
+     * @return array
+     */
+    function suppliers()
+    {
+        $stmt = $this->dbh->prepare("SELECT supp_id AS id, supplier FROM suppliers ORDER BY supplier");
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM suppliers()
 
 } // EOM DbHandler()
 
