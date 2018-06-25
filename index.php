@@ -5,9 +5,9 @@
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.3.2";
+$APP_VERSION="0.3.3";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2016-07-29";
+$APP_MODIFIED="2018-06-25";
 
 session_start();
 
@@ -21,28 +21,18 @@ $loader = new Twig_Loader_Filesystem('views');
 $twig = new Twig_Environment($loader);
 
 
-
-// Read the configuration file if exists
-//include_once("./config/admin.conf.php");
-
 // Include required helper functions
 include_once("./include/dbfunctions.inc.php");
-//include_once("./include/functions.inc.php");
 include_once("classes/Asset.class.php");
+include_once("classes/Authenticate.class.php");
 include_once("classes/DbHandler.class.php");
 include_once("classes/AdminUtils.class.php");
-require("./include/authenticate.inc.php");
-
-// Check that the config file has been read!
-if (!isset($DBSERVER))
-	die("Unable to read contents of configuration file.");
+//require("./include/authenticate.inc.php");
 
 ($_SERVER['REQUEST_METHOD'] == 'GET') ? $values = $_GET : $values = $_POST;
 
 // Read the configuration file config/config.ini.php and extract the
 // intresting bits
-// Read the configuration file
-
 if ( $settings = parse_ini_file("config/config.ini.php", true) ) {
 
     $DBNAME   = $settings['database']['schema'];
@@ -64,18 +54,16 @@ if ( $settings = parse_ini_file("config/config.ini.php", true) ) {
 }
 
 
-// Create a connection to the database
-$mydb = new mysqldb($DBSERVER, $DBNAME, $DBUSER, $DBPASSWD);
-if (! $mydb)
-	print_error("Unable to connect to database.<br/><b>MySQL error</b><br/>Errno: " . mysql_errno() . "<br/>Error: " . mysql_error(), "error");
-
-
-
 
 /**
  * Check if the user is logged in or not
  */
-$priv = authenticate();
+//$priv = authenticate();
+$priv = false;
+if ( isset($_SESSION['username']) && isset($_SESSION['password']) ) {
+	$auth = new Authenticate();
+	$priv = $auth->authenticate( $_SESSION['username'], $_SESSION['password'] );
+}
 
 /**
  * Test to load data before the asset form is displayed in preparation of using templates
@@ -92,20 +80,25 @@ if ( $utilDb->connect_error ) {
     $utils = new Utilities( $utilDb );
 
     //$assetCnt  = $utils->getCount();
-    $catArray  = $utils->getCategories();  // Get a list of categories
-    $statArray = $utils->getStatus();      // Get a list of status levels
+    //$catArray  = $utils->getCategories();  // Get a list of categories
+    //$statArray = $utils->getStatus();      // Get a list of status levels
     //$licArray  = $utils->getLicense();     // Get a list of licenses (disabled 2016-07-27/Daniel)
-    $depArray  = $utils->getDepartments(); // Get a list of departments
-    $supArray  = $utils->getSuppliers();   // Get a list of suppliers
+    //$depArray  = $utils->getDepartments(); // Get a list of departments
+    //$supArray  = $utils->getSuppliers();   // Get a list of suppliers
 }
 
 /**
  * Create an instance of DbHandler and fetch data to be used in the asset form
  */
 try {
-    $dbh = new DbHandler( $DBNAME, $DBUSER, $DBPASSWD, $DBTYPE, $DBSERVER );
+    $dbh = new DbHandler( $DBNAME, $DBUSER, $DBPASSWD, $DBDRIVER, $DBSERVER );
     $assetCnt = $dbh->getCount();
+		$catArray  = $dbh->categories();
     $arClients = $dbh->clients();
+		$depArray  = $dbh->departments();
+		$manufArray = $dbh->manufacturers();
+		$statArray = $dbh->status();
+		$supArray  = $dbh->suppliers();
 } catch (Exception $ex) {
   $template = $twig->loadTemplate('error.tmpl');
   echo $template->render( array(
@@ -129,6 +122,7 @@ $cfgData = array(
 );
 
 
+try {
 // Check what part to load, if any
 switch ($values['cmd'])
 {
@@ -146,7 +140,6 @@ switch ($values['cmd'])
         break;
 
     case "new":
-        //asset_form($mydb, 0, $resArray, $licArray, $statArray);
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "CreateAsset";
         echo $template->render(array (
@@ -163,7 +156,8 @@ switch ($values['cmd'])
     case "edit":
     case "Edit":
         $asset = $values['asset'];
-        $assetData = $utils->getAssetData( $asset );
+        //$assetData = $utils->getAssetData( $asset );
+	$assetData = $dbh->getAssetData( $asset );
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
         echo $template->render(array (
@@ -178,8 +172,7 @@ switch ($values['cmd'])
         break;
 
     case "search_criteria":
-        //search_assets($mydb, $values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
-	$searchRes = $utils->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
+				$searchRes = $utils->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
         $cfgData['searchCnt'] = sizeof($searchRes);
 
         $template = $twig->loadTemplate('search_result.tmpl');
@@ -190,10 +183,6 @@ switch ($values['cmd'])
             'searchRes'  => $searchRes
         ) );
         break;
-
-//	case "CreateNewAsset":
-//		create_asset_entry($mydb, $values);
-//		break;
 
     case "CreateAsset":
         $asset = $utils->createAsset( $values, $_SESSION['username'] );
@@ -242,11 +231,9 @@ switch ($values['cmd'])
         break;
 
 	case "InsertComment":
-	    //insert_history_comment($mydb, $values);
 	    break;
 
 	case "DuplicateAsset":
-	    //duplicate_asset($mydb, $values['asset']);
 	    break;
 
     // We are testing Twig here
@@ -340,9 +327,6 @@ switch ($values['cmd'])
 
     case "search":
     default:
-        // Assemble a few arrays
-        $depArray   = $utils->getDepartments();
-        $manufArray = $utils->getManufacturers();
         $template = $twig->loadTemplate('search_form.tmpl');
         echo $template->render( array(
             'pageTitle'   => "OSCAR v3 Search",
@@ -356,6 +340,13 @@ switch ($values['cmd'])
 
 }
 
+} catch (Exception $ex) {
+	$template = $twig->loadTemplate('error.tmpl');
+  echo $template->render( array(
+      'pageTitle' => "OSCAR - ERROR",
+      'error'     => $ex->getMessage()
+  ) );
+}
 // Close the database connection
 $utilDb->close();
 

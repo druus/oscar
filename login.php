@@ -11,42 +11,15 @@ include('auth.php');
 
 // Include useful functions
 include_once("include/dbfunctions.inc.php");
-include_once("include/authenticate.inc.php");
-include_once("config/admin.conf.php");
+//include_once("include/authenticate.inc.php");
+include_once('classes/Authenticate.class.php');
+include_once("config/admin.conf.php"); // Remove in the near future
+
 
 ($_SERVER['REQUEST_METHOD'] == 'GET') ? $values = $_GET : $values = $_POST;
 
-
-# Create a connection to the database
-/*
-$auth = mysql_connect($DBHOST, $DBUSER, $DBPASSWD);
-if (!mysql_select_db($DBNAME, $auth)) {
-        $errorMessage = mysql_error($auth);
-        print "ERROR:<BR>\n";
-        print $errorMessage;
-        die;
-}
-*/
-$auth = new mysqldb($DBSERVER, $DBNAME, $DBUSER, $DBPASSWD);
-if (! $auth)
-	print_error("Unable to connect to database.<br/><b>MySQL error</b><br/>Errno: " . mysql_errno() . "<br/>Error: " . mysql_error(), "error");
-
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!--
-    $Header: /srv/cvsroot/AQasset/login.php,v 1.1 2005/04/14 13:59:07 druus Exp $
-
-    Description
-	Login system for AQ asset
-
- --------------------------------------
-History
--------
-$Log: login.php,v $
-Revision 1.1  2005/04/14 13:59:07  druus
-Initial release.
-
--->
 <html>
 <head>
 	<title>AQ Asset Login</title>
@@ -79,7 +52,9 @@ if ($values['cmd'] == "login")
 	//$user = new User($values['username']);
 
 	// Store the user name as a session variable
-	$loginRes = user_login($values['username'], $values['password'], $auth);
+	//$loginRes = user_login($values['username'], $values['password'], $auth);
+	$auth = new Authenticate();
+	$loginRes = $auth->login($values['username'], $values['password']);
 
 	if ($loginRes == FALSE)
 	{
@@ -95,13 +70,19 @@ if ($values['cmd'] == "login")
 
 if ($values['cmd'] == "logout")
 {
-	user_logout();
+	//user_logout();
+	$auth = new Authenticate();
+	$auth->logout();
+	echo "Logging out user '" . $_SESSION['username'] . "'.<br/>\n";
+
+	echo "Click <a href=\"index.php\">here</a> to continue.<br/>\n";
+	//die();
 
 ?>
 <a href="index.php">Return to Asset Index page</a><br/>
 <META HTTP-EQUIV="refresh" CONTENT="0;url='index.php'">
 <?php
-	die();
+	//die();
 }
 
 
