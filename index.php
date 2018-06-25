@@ -5,9 +5,9 @@
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.3.2";
+$APP_VERSION="0.3.3";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2016-07-29";
+$APP_MODIFIED="2018-06-25";
 
 session_start();
 
@@ -157,7 +157,7 @@ switch ($values['cmd'])
     case "Edit":
         $asset = $values['asset'];
         //$assetData = $utils->getAssetData( $asset );
-				$assetData = $dbh->getAssetData( $asset );
+	$assetData = $dbh->getAssetData( $asset );
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
         echo $template->render(array (

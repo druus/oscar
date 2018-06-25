@@ -107,7 +107,7 @@ class DbHandler {
       } else {
 
         try {
-          $stmt = $this->dbh->prepare("SELECT asset, productcode, manufacturer, model, serial, description, category, client, active, introduced, status, owner_dep, owner_name, po_number, supplier, manuf_invoice, manuf_artno, supplier_artno, barcode, comment, user, asset_entry_created, asset_entry_created_by, asset_modified, asset_modified_by FROM asset WHERE asset = :asset LIMIT 1");
+          $stmt = $this->dbh->prepare("SELECT asset, productcode, manufacturer, model, serial, description, long_description, category, client, active, introduced, status, owner_dep, owner_name, po_number, supplier, manuf_invoice, manuf_artno, supplier_artno, barcode, comment, user, asset_entry_created, asset_entry_created_by, asset_modified, asset_modified_by FROM asset WHERE asset = :asset LIMIT 1");
           $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
 
           if ( $stmt->execute() ) {

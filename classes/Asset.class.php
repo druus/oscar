@@ -202,7 +202,7 @@ class UtilitiesTemp
     function getAssetData( $asset )
     {
 
-        $query = "SELECT asset, productcode, manufacturer, model, serial, date_code, description, category, computer_user, client, parent_id, license_type, active, introduced, status, owner_dep, owner_name, po_number, supplier, manuf_invoice, manuf_artno, supplier_artno, barcode, email, comment, user, asset_entry_created, asset_entry_created_by, asset_modified, asset_modified_by FROM asset WHERE asset = " . $asset . " LIMIT 1";
+        $query = "SELECT asset, productcode, manufacturer, model, serial, date_code, description, long_description, category, computer_user, client, parent_id, license_type, active, introduced, status, owner_dep, owner_name, po_number, supplier, manuf_invoice, manuf_artno, supplier_artno, barcode, email, comment, user, asset_entry_created, asset_entry_created_by, asset_modified, asset_modified_by FROM asset WHERE asset = " . $asset . " LIMIT 1";
         $utildb = $this->getdb();
         $res = $utildb->query( $query );
         if ( $res == false ) {
@@ -394,6 +394,7 @@ class UtilitiesTemp
         $manufacturer = $values['manufacturer'];
         $model        = $values['model'];
         $description  = $values['description'];
+        $long_description = $values['long_description'];
         $introduced   = $values['introduced'];
         $serial       = $values['serial'];
         $status       = $values['status'];
@@ -404,8 +405,8 @@ class UtilitiesTemp
         $po_number    = $values['po_number'];
         $manuf_invoice= $values['manuf_invoice'];
 
-        $query = "INSERT INTO asset (productcode, manufacturer, model, description, introduced, serial, category, status, owner_dep, supplier, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by, client) ";
-        $query .= "VALUES ('". $productcode . "', '" . $manufacturer . "', '" . $model . "', '" . $description . "', '" . $introduced . "', '" . $serial . "', " . $category . ", " . $status . ", " . $owner_dep . ", '" . $supplier . "', '" . $barcode . "', '". $po_number . "', '" . $manuf_invoice . "', NOW(), '" . $username . "', 10)";
+        $query = "INSERT INTO asset (productcode, manufacturer, model, description, long_description, introduced, serial, category, status, owner_dep, supplier, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by, client) ";
+        $query .= "VALUES ('". $productcode . "', '" . $manufacturer . "', '" . $model . "', '" . $description . "', '" . $long_description . "', '" . $introduced . "', '" . $serial . "', " . $category . ", " . $status . ", " . $owner_dep . ", '" . $supplier . "', '" . $barcode . "', '". $po_number . "', '" . $manuf_invoice . "', NOW(), '" . $username . "', 10)";
 
         $utildb = $this->getdb();
             $res = $utildb->query( $query );
@@ -430,6 +431,7 @@ class UtilitiesTemp
             $manufacturer = $values['manufacturer'];
             $model        = $values['model'];
             $description  = $values['description'];
+            $long_description = $values['long_description'];
             $introduced   = $values['introduced'];
             $serial       = $values['serial'];
             $status       = $values['status'];
@@ -440,7 +442,7 @@ class UtilitiesTemp
             $po_number    = $values['po_number'];
             $manuf_invoice= $values['manuf_invoice'];
             
-            $query = "UPDATE asset SET productcode = '" . $productcode . "', manufacturer = '" . $manufacturer . "', model = '" . $model . "', description = '" . $description . "', introduced = '" . $introduced . "', serial = '" . $serial . "', category = " . $category . ", status = " . $status . ", owner_dep = " . $owner_dep . ", supplier = '" . $supplier . "', barcode = '" . $barcode . "', po_number = '" . $po_number . "', manuf_invoice = '" . $manuf_invoice . "', asset_modified = NOW(), asset_modified_by = '" . $username . "' WHERE asset = " . $asset;
+            $query = "UPDATE asset SET productcode = '" . $productcode . "', manufacturer = '" . $manufacturer . "', model = '" . $model . "', description = '" . $description . "', long_description = " . $long_description . "', introduced = '" . $introduced . "', serial = '" . $serial . "', category = " . $category . ", status = " . $status . ", owner_dep = " . $owner_dep . ", supplier = '" . $supplier . "', barcode = '" . $barcode . "', po_number = '" . $po_number . "', manuf_invoice = '" . $manuf_invoice . "', asset_modified = NOW(), asset_modified_by = '" . $username . "' WHERE asset = " . $asset;
 
             $utildb = $this->getdb();
             $res = $utildb->query( $query );
