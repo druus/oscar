@@ -27,6 +27,47 @@ class DbHandler {
     private $dbtype;
     private $dbhost;
 
+    // Functions used for initialising variables
+  	function setdb($db)
+  	{
+  		$this->db = $db;
+  	}
+
+  	function getdb()
+  	{
+  		return $this->db;
+  	}
+
+  	function setasset($asset)
+  	{
+  		$this->asset = $asset;
+  	}
+
+  	function getasset()
+  	{
+  		return $this->asset;
+  	}
+
+  	function setcomment($comment)
+  	{
+  		$this->comment = $comment;
+  	}
+
+  	function getcomment()
+  	{
+  		return $this->comment;
+  	}
+
+  	function setuser($user)
+  	{
+  		$this->user = $user;
+  	}
+
+  	function getuser()
+  	{
+  		return $this->user;
+  	}
+
     function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost" )
     {
 
@@ -217,6 +258,156 @@ class DbHandler {
 
     } // EOM suppliers()
 
+
+    /**
+     * Search för assets
+     *
+     * @return array
+     */
+    function searchAssets($search_category, $search_department, $search_client, $search_manuf, $search_text, $list_order = "asset")
+    {
+
+        $searchAsset =<<< EOQ
+SELECT DISTINCT(a.asset), a.manufacturer, a.model, a.description, c.category, d.dep_name AS department
+FROM asset a, category c, departments d, clients o, asset_history h
+WHERE a.category = c.id
+AND a.owner_dep = d.dep_id
+AND a.client = o.cid
+AND a.asset = h.asset
+EOQ;
+
+        if (isset($search_category))
+                $searchAsset .= " AND c.id IN (" . implode(",", $search_category) . ") ";
+
+        if (isset($search_department))
+                $searchAsset .= " AND d.dep_id IN (" . implode(",", $search_department) . ") ";
+
+        if (isset($search_client))
+                $searchAsset .= " AND a.client IN (" . implode(",", $search_client) . ") ";
+
+    if (isset($search_manuf))
+        $searchAsset .= " AND a.manufacturer IN ('" . implode("','", $search_manuf) . "') ";
+
+        if (isset($search_text))
+            $searchAsset .= " AND (a.asset LIKE '%$search_text%' OR manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
+
+        $searchAsset .= "ORDER BY " . $list_order;
+
+/*
+        $utildb = $this->getdb();
+        $res = $utildb->execute( $searchAsset );
+        if ( $res == false ) {
+            echo "ERROR: " . $this->getdb()->error;
+        } else {
+            return $res->fetch_all(MYSQLI_ASSOC);
+        }
+*/
+
+
+
+        if ( $stmt = $this->dbh->query($searchAsset) ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM searchAssets()
+
+
+    /**
+     * Create a new asset
+     * @return Asset number
+     */
+    function createAsset( $values, $username )
+    {
+	      $productcode  = $values['productcode'];
+        $manufacturer = $values['manufacturer'];
+        $model        = $values['model'];
+        $description  = $values['description'];
+        $long_description = $values['long_description'];
+        $introduced   = $values['introduced'];
+        $serial       = $values['serial'];
+        $status       = $values['status'];
+        $category     = $values['category'];
+        $owner_dep    = $values['owner_dep'];
+        $supplier     = $values['supplier'];
+        $supplier_artno=$values['supplier_artno'];
+        $client       = $values['client'];
+        $barcode      = $values['barcode'];
+        $po_number    = $values['po_number'];
+        $manuf_invoice= $values['manuf_invoice'];
+
+        $query = "INSERT INTO asset (productcode, manufacturer, model, description, long_description, introduced, serial, category, status, owner_dep, client, supplier, supplier_artno, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by) ";
+        $query .= "VALUES ('". $productcode . "', '" . $manufacturer . "', '" . $model . "', '" . $description . "', '" . $long_description . "', '" . $introduced . "', '" . $serial . "', " . $category . ", " . $status . ", " . $owner_dep . ", " . $client . ", " . $supplier . ", '" . $supplier_artno . "', '" . $barcode . "', '". $po_number . "', '" . $manuf_invoice . "', NOW(), '" . $username . "')";
+
+        if ( $stmt = $this->dbh->query($query) ) {
+            return $this->dbh->lastInsertId();
+        }
+
+        return false;
+
+    } // EOM createAsset()
+
+
+    /**
+     * Update an existing asset
+     */
+    function updateAsset($asset, $values, $username)
+    {
+
+        if ( $asset > 0 ) {
+            $productcode  = $values['productcode'];
+            $manufacturer = $values['manufacturer'];
+            $model        = $values['model'];
+            $description  = $values['description'];
+            $long_description = $values['long_description'];
+            $introduced   = $values['introduced'];
+            $serial       = $values['serial'];
+            $status       = $values['status'];
+            $category     = $values['category'];
+            $owner_dep    = $values['owner_dep'];
+            $supplier     = $values['supplier'];
+            $supplier_artno= $values['supplier_artno'];
+            $client       = $values['client'];
+            $barcode      = $values['barcode'];
+            $po_number    = $values['po_number'];
+            $manuf_invoice= $values['manuf_invoice'];
+
+            $query = "UPDATE asset SET productcode = '" . $productcode . "', manufacturer = '" . $manufacturer . "', model = '" . $model . "', description = '" . $description . "', long_description = '" . $long_description . "', introduced = '" . $introduced . "', serial = '" . $serial . "', category = " . $category . ", status = " . $status . ", owner_dep = " . $owner_dep . ", supplier = " . $supplier . ", supplier_artno = '" . $supplier_artno . "', client = " . $client . ", barcode = '" . $barcode . "', po_number = '" . $po_number . "', manuf_invoice = '" . $manuf_invoice . "', asset_modified = NOW(), asset_modified_by = '" . $username . "' WHERE asset = " . $asset;
+
+            if ( $stmt = $this->dbh->query($query) ) {
+                return true;
+            }
+
+            return false;
+        }
+
+    } // EOM updateAsset()
+
+    /**
+     * Insert a comment into the history table
+     */
+    function insertComment()
+  	{
+  		$asset = $this->getasset();
+  		$comment = $this->getcomment();
+  		$user = $this->getuser();
+
+  		// Construct an INSERT statement
+  		$insLog = "INSERT INTO asset_history ";
+  		$insLog .= "(asset, comment, updated_by, updated_time) ";
+  		$insLog .= "VALUES ('" . $asset . "', ";
+  		$insLog .= "'" . $comment . "', ";
+  		$insLog .= "'" . $user . "', ";
+  		$insLog .= "NOW()) ";
+
+      if ( $stmt = $this->dbh->query($insLog) ) {
+          return true;
+      }
+
+      return false;
+
+  	}
 } // EOM DbHandler()
 
 ?>

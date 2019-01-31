@@ -2,12 +2,17 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
+** Version      1.0
+** Created by   Daniel Ruus
+** Created      ??
+** Modified     2019-01-31
+** Modified by  Daniel Ruus
 ** License      The MIT License (MIT) (See the file LICENSE)
-** Copyright (c) 2015, 2016 Daniel Ruus
+** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.3.3";
+$APP_VERSION="0.4.0";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2018-06-25";
+$APP_MODIFIED="2019-01-31";
 
 session_start();
 
@@ -30,6 +35,10 @@ include_once("classes/AdminUtils.class.php");
 //require("./include/authenticate.inc.php");
 
 ($_SERVER['REQUEST_METHOD'] == 'GET') ? $values = $_GET : $values = $_POST;
+
+if (!isset($values['cmd'])) {
+  $values['cmd'] = "";  // Initialize variable if not already set
+}
 
 // Read the configuration file config/config.ini.php and extract the
 // intresting bits
@@ -54,6 +63,18 @@ if ( $settings = parse_ini_file("config/config.ini.php", true) ) {
 }
 
 
+/**
+ * Maybe the user wants to login?
+ */
+if ( isset($values['cmd']) && $values['cmd'] == "checklogin" ) {
+  $auth = new Authenticate();
+  $user = $auth->login( $values['username'], $values['password'] );
+}
+
+if ( isset($values['cmd']) && $values['cmd'] == "logout" ) {
+  $auth = new Authenticate();
+  $user = $auth->logout();
+}
 
 /**
  * Check if the user is logged in or not
@@ -65,6 +86,7 @@ if ( isset($_SESSION['username']) && isset($_SESSION['password']) ) {
 	$priv = $auth->authenticate( $_SESSION['username'], $_SESSION['password'] );
 }
 
+
 /**
  * Test to load data before the asset form is displayed in preparation of using templates
  *
@@ -72,7 +94,9 @@ if ( isset($_SESSION['username']) && isset($_SESSION['password']) ) {
  *           The following will be phased out as the class Utilities will be replaced
  *           by Asset and DbHandler...
  */
+
 include_once("classes/Utilities.class.php");
+/*
 $utilDb = mysqli_connect( $DBSERVER, $DBUSER, $DBPASSWD, $DBNAME );
 if ( $utilDb->connect_error ) {
     echo "Database connection failed: " . $utilDb->connect_error;
@@ -86,6 +110,7 @@ if ( $utilDb->connect_error ) {
     //$depArray  = $utils->getDepartments(); // Get a list of departments
     //$supArray  = $utils->getSuppliers();   // Get a list of suppliers
 }
+*/
 
 /**
  * Create an instance of DbHandler and fetch data to be used in the asset form
@@ -108,13 +133,15 @@ try {
   die(); // Not a very nice solution, but let's run with it for now
 }
 
+$utils = new Utilities( $dbh );
+
 /**
  * Construct an array with some useful data in it
  */
 $cfgData = array(
     'dbServer' => $DBSERVER,
     'dbName'   => $DBNAME,
-    'dbType'   => $DBTYPE,
+    'dbType'   => $DBDRIVER,
     'dbUser'   => $DBUSER,
     'assetCnt' => $assetCnt,
     'priv'     => $priv,
@@ -139,6 +166,11 @@ switch ($values['cmd'])
         ));
         break;
 
+    case "login":
+        $template = $twig->loadTemplate('login.tmpl');
+        echo $template->render(array());
+        break;
+
     case "new":
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "CreateAsset";
@@ -157,7 +189,7 @@ switch ($values['cmd'])
     case "Edit":
         $asset = $values['asset'];
         //$assetData = $utils->getAssetData( $asset );
-	$assetData = $dbh->getAssetData( $asset );
+	      $assetData = $dbh->getAssetData( $asset );
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
         echo $template->render(array (
@@ -172,7 +204,8 @@ switch ($values['cmd'])
         break;
 
     case "search_criteria":
-				$searchRes = $utils->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
+				//$searchRes = $utils->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
+        $searchRes = $dbh->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
         $cfgData['searchCnt'] = sizeof($searchRes);
 
         $template = $twig->loadTemplate('search_result.tmpl');
@@ -185,13 +218,14 @@ switch ($values['cmd'])
         break;
 
     case "CreateAsset":
-        $asset = $utils->createAsset( $values, $_SESSION['username'] );
+        //$asset = $utils->createAsset( $values, $_SESSION['username'] );
+        $asset = $dbh->createAsset( $values, $_SESSION['username'] );
         if ( $asset > 0 ) {
-            $assetData = $utils->getAssetData( $asset, $_SESSION['username'] );
-            $utils->setasset( $asset );
-            $utils->setuser( $_SESSION['username'] );
-            $utils->setcomment( 'Asset created' );
-            $utils->insertComment();
+            $assetData = $dbh->getAssetData( $asset, $_SESSION['username'] );
+            $dbh->setasset( $asset );
+            $dbh->setuser( $_SESSION['username'] );
+            $dbh->setcomment( 'Asset created' );
+            $dbh->insertComment();
         }
         $template = $twig->loadTemplate('asset_form2.tmpl');
         echo $template->render(array (
@@ -208,15 +242,25 @@ switch ($values['cmd'])
 
     case "UpdateAssetEntry":
         $asset = $values['assetno'];
+
         if ( isset($_SESSION['username']) ) {
-            $utils->updateAsset( $asset, $values, $_SESSION['username'] );
+            //$utils->updateAsset( $asset, $values, $_SESSION['username'] );
+            $dbh->updateAsset( $asset, $values, $_SESSION['username'] );
+            $dbh->setasset( $asset );
+						$dbh->setuser( $_SESSION['username'] );
+						$dbh->setcomment( 'Asset modified' );
+						$dbh->insertComment();
+            /*
 						$utils->setasset( $asset );
 						$utils->setuser( $_SESSION['username'] );
 						$utils->setcomment( 'Asset modified' );
 						$utils->insertComment();
+            */
         }
 
-        $assetData = $utils->getAssetData( $asset );
+
+        //$assetData = $utils->getAssetData( $asset );
+        $assetData = $dbh->getAssetData( $asset );
         $template = $twig->loadTemplate('asset_form2.tmpl');
         echo $template->render(array (
             'assetData'  => $assetData,
@@ -277,44 +321,44 @@ switch ($values['cmd'])
     /***************************************/
     /**     Deal with admin functions      */
     /***************************************/
-    case "admin-suppliers":
+    case "admin-categories":
         $formCmd = "";
         // Create an instance of AdminUtils
         try {
           $adminUtils = new AdminUtils( $DBNAME, $DBUSER, $DBPASSWD, $DBTYPE, $DBSERVER );
-          if ( $values['subcmd'] == "edit" && $values['suppid'] > 0 ) {
-              $suppliers = $adminUtils->getSupplier( $values['suppid'] );
-              $suppliers = $suppliers[0];
+          if ( $values['subcmd'] == "edit" && $values['catid'] > 0 ) {
+              $categories = $adminUtils->getCategory( $values['catid'] );
+              $categories = $categories[0];
               $formCmd = "update";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else if ( $values['subcmd'] == "new" ) {
               $formCmd = "create";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
-          } else if ( $values['subcmd'] == "delete" && $values['suppid'] > 0 ) {
-              $adminUtils->deleteSupplier( $values['suppid'] );
-              $suppliers = $adminUtils->getSuppliers();
-              $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
+          } else if ( $values['subcmd'] == "delete" && $values['catid'] > 0 ) {
+              $adminUtils->deleteCategory( $values['catid'] );
+              $categories = $adminUtils->getCategories();
+              $template = $twig->loadTemplate('admin-categories_list.tmpl');
           } else if ( $values['subcmd'] == "create" ) {
-              if ( !$supplier = $adminUtils->createSupplier( $values['supplier'], $values['description'], $values['website'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $supplier . "\n"; }
-              $suppliers = $adminUtils->getSupplier( $supplier );
-              $suppliers = $suppliers[0];
+              if ( !$category = $adminUtils->createCategory( $values['category'], $values['description'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $category . "\n"; }
+              $categories = $adminUtils->getCategory( $category );
+              $categories = $categories[0];
               $formCmd = "update";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
-          } else if ( $values['subcmd'] == "update" && $values['suppid'] > 0 ) {
-              $adminUtils->updateSupplier( $values['suppid'], $values['supplier'], $values['description'], $values['website'] );
-              $suppliers = $adminUtils->getSupplier( $values['suppid'] );
-              $suppliers = $suppliers[0];
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
+          } else if ( $values['subcmd'] == "update" && $values['catid'] > 0 ) {
+              $adminUtils->updateCategory( $values['catid'], $values['category'], $values['description'], $_SESSION['username'] );
+              $categories = $adminUtils->getCategory( $values['catid'] );
+              $categories = $categories[0];
               $formCmd = "update";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else {
-              $suppliers = $adminUtils->getSuppliers();
-              $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              $categories = $adminUtils->getCategories();
+              $template   = $twig->loadTemplate('admin-categories_list.tmpl');
           }
               echo $template->render( array(
                   'pageTitle'   => "OSCAR v3 Admin - Suppliers",
                   'cfgData'     => $cfgData,
                   'formCmd'     => $formCmd,
-                  'suppliers'   => $suppliers
+                  'categories'  => $categories
               ) );
         } catch(Exception $e) {
           $template= $twig->loadTemplate('error.tmpl');
@@ -324,6 +368,54 @@ switch ($values['cmd'])
           ));
         }
         break;
+
+        case "admin-suppliers":
+            $formCmd = "";
+            // Create an instance of AdminUtils
+            try {
+              $adminUtils = new AdminUtils( $DBNAME, $DBUSER, $DBPASSWD, $DBTYPE, $DBSERVER );
+              if ( $values['subcmd'] == "edit" && $values['suppid'] > 0 ) {
+                  $suppliers = $adminUtils->getSupplier( $values['suppid'] );
+                  $suppliers = $suppliers[0];
+                  $formCmd = "update";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else if ( $values['subcmd'] == "new" ) {
+                  $formCmd = "create";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else if ( $values['subcmd'] == "delete" && $values['suppid'] > 0 ) {
+                  $adminUtils->deleteSupplier( $values['suppid'] );
+                  $suppliers = $adminUtils->getSuppliers();
+                  $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              } else if ( $values['subcmd'] == "create" ) {
+                  if ( !$supplier = $adminUtils->createSupplier( $values['supplier'], $values['description'], $values['website'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $supplier . "\n"; }
+                  $suppliers = $adminUtils->getSupplier( $supplier );
+                  $suppliers = $suppliers[0];
+                  $formCmd = "update";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else if ( $values['subcmd'] == "update" && $values['suppid'] > 0 ) {
+                  $adminUtils->updateSupplier( $values['suppid'], $values['supplier'], $values['description'], $values['website'] );
+                  $suppliers = $adminUtils->getSupplier( $values['suppid'] );
+                  $suppliers = $suppliers[0];
+                  $formCmd = "update";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else {
+                  $suppliers = $adminUtils->getSuppliers();
+                  $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              }
+                  echo $template->render( array(
+                      'pageTitle'   => "OSCAR v3 Admin - Suppliers",
+                      'cfgData'     => $cfgData,
+                      'formCmd'     => $formCmd,
+                      'suppliers'   => $suppliers
+                  ) );
+            } catch(Exception $e) {
+              $template= $twig->loadTemplate('error.tmpl');
+              echo $template->render(array(
+                'pageTitle'  => 'OSCAR - ERROR',
+                'error'      => $e->getMessage()
+              ));
+            }
+            break;
 
     case "search":
     default:
@@ -348,6 +440,6 @@ switch ($values['cmd'])
   ) );
 }
 // Close the database connection
-$utilDb->close();
+//$utilDb->close();
 
 ?>

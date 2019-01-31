@@ -21,6 +21,7 @@
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
         <ul class="dropdown-menu">
           <li><a href="categoryadm.php">Categories</a></li>
+          <li><a href="index.php?cmd=admin-categories">Categories (new)</a></li>
           <li><a href="clientadm.php">Clients</a></li>
           <li><a href="departmentadm.php">Departments</a></li>
           <li><a href="#">Licenses</a></li>
@@ -39,9 +40,11 @@
       <li><a>User: {{ cfgData.userName }}</a></li>
       <li><a href="?cmd=help">Help</a></li>
 {% if cfgData.priv == false %}
-        <li><a href="login.php?cmd=login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <!--<li><a href="login.php?cmd=login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>-->
+        <li><a href="index.php?cmd=login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 {% else %}
-            <li><a href="login.php?cmd=logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+            <!--<li><a href="login.php?cmd=logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>-->
+            <li><a href="index.php?cmd=logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
 {% endif %}
     </ul>
 

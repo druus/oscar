@@ -1,0 +1,34 @@
+{% include 'header.tmpl' %}
+
+{%include 'navbar_top.tmpl' %}
+
+<div class="container">
+
+<div class="table-responsive">
+  <a href="?cmd=admin-categories&subcmd=new">Create a new category entry</a>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <td>ID</td>
+      <td>Category</td>
+      <td>Description</td>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for category in categories %}
+    <tr>
+      <td><a href="index.php?cmd=admin-categories&subcmd=edit&catid={{ category.id }}"</a>{{ category.id }}</a></td>
+      <td>{{ category.category }}</td>
+      <td>{{ category.description }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+
+  </table>
+
+</div>
+
+</div>
+
+{% include 'footer.tmpl' %}

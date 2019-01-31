@@ -77,6 +77,130 @@ class AdminUtils {
 
     } // EOM getLatestAsset();
 
+
+    /**
+     * Search for assets
+     */
+    function searchAssets() {
+
+    } // EOM searchAssets()
+
+
+    /***************************************/
+    /**         C A T E G O R I E S       **/
+    /***************************************/
+
+    /**
+     * Retrieve a list of categories
+     * @return array
+     */
+    function getCategories()
+    {
+        $stmt = $this->dbh->prepare("SELECT id, category, description FROM category ORDER BY category");
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM getCategories()
+
+
+    /**
+     * Get details for a category
+     * @return array containing category details
+     */
+    function getCategory( $category_id )
+    {
+        $stmt = $this->dbh->prepare("SELECT id, category, description FROM category WHERE id = :category_id");
+        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM getCategory()
+
+
+    /**
+     * Create a new category
+     *
+     */
+    function createCategory( $category, $description, $username  )
+    {
+        $lastId = false;
+        try {
+            $stmt = $this->dbh->prepare("INSERT INTO category (id, category, description, entry_created, entry_created_by) VALUES (NULL, :category, :description, NOW(), :username)");
+            $stmt->bindParam(':category', $category);
+            $stmt->bindParam(':description', $description);
+            $stmt->bindParam(':username', $username);
+
+            $this->dbh->beginTransaction();
+            $stmt->execute();
+            $lastId = $this->dbh->lastInsertId();
+
+            $stmt->debugDumpParams();
+            echo "<br/>Supplier: " . $supplier . "<br/>\n";
+            echo "Description: " . $description . "<br/>\n";
+            echo "Website   : " . $website . "<br/>\n";
+            echo "Username  : " . $username . "<br/>\n";
+            $this->dbh->commit();
+        } catch(PDOException $e) {
+            $this->dbh->rollback();
+            print "Error!: " . $e->getMessage() . "</br>";
+            die();
+        }
+
+        return $lastId;
+
+    } // EOM updateCategory()
+
+
+    /**
+     * Update a category
+     *
+     */
+    function updateCategory( $category_id, $category, $description, $username )
+    {
+        $stmt = $this->dbh->prepare("UPDATE category SET category = :category, description = :description, time_stamp = NOW(), entry_modified = NOW(), entry_modified_by = :username WHERE id = :category_id");
+        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM updateCategory()
+
+
+    /**
+     * Delete a supplier
+     * @return
+     */
+    function deleteCategory( $supplier_id )
+    {
+        $stmt = $this->dbh->prepare("DELETE FROM suppliers WHERE supp_id = :supplier_id");
+        $stmt->bindParam(':supplier_id', $supplier_id, PDO::PARAM_INT);
+
+        if ( $stmt->execute() ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM deleteSupplier()()
+
+
+    /***************************************/
+    /**         S U P P L I E R S         **/
+    /***************************************/
+
     /**
      * Retrieve a list of suppliers
      * @return array
@@ -183,6 +307,7 @@ class AdminUtils {
         return false;
 
     } // EOM deleteSupplier()()
+
 
 } // EOC DbHandler()
 

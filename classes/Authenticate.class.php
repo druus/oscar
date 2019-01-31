@@ -114,7 +114,7 @@ class Authenticate {
     		//$loggeduser = $username;
     		$_SESSION['username'] = $username;
     		$_SESSION['password'] = $password;
-    		echo "You are logged in as '" . $username . "'.<br/>\n";
+    		//echo "You are logged in as '" . $username . "'.<br/>\n";
 
     		return $uname;
      	}

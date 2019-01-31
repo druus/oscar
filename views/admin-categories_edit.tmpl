@@ -1,0 +1,38 @@
+{% include 'header.tmpl' %}
+
+{%include 'navbar_top.tmpl' %}
+
+<div class="container">
+
+<h3 align="center">Edit Category</h3>
+<form action="index.php" method="post">
+<input type="hidden" name="cmd" value="admin-categories"/>
+<input type="hidden" name="subcmd" value="{{ formCmd }}"/>
+<input type="hidden" name="catid" value="{{ categories.id }}"/>
+
+<table border="0" align="center">
+<tr bgcolor="#6780b8">
+	<td colspan="4"><font color="white">Category Details</font></td>
+</tr>
+<tr>
+	<td valign="top">Category</td>
+	<td colspan="3"><input type="text" name="category" class="input-style" size="32" value="{{ categories.category }}" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'"></td>
+</tr>
+
+<tr>
+	<td valign="top">Description</td>
+	<td colspan="3"><textarea name="description" rows="3" cols="64" class="input-style" onFocus="style.backgroundColor='#FFFFCC'" onBlur="style.backgroundColor='#FFFFFF'">{{ categories.description }}</textarea></td>
+</tr>
+
+
+<TR>
+	<TD COLSPAN="2"><INPUT TYPE="button" VALUE="Cancel" onClick="javascrpt:history.back(1);">&nbsp;<INPUT TYPE="submit" VALUE="Save">
+          <a href="index.php?cmd=admin-suppliers&subcmd=delete&suppid={{ categories.id }}" onClick="return confirmSubmit('Are you sure you want to delete this category?');">
+		<img src="images/delete_small.gif" border="0" alt="Delete Client">Delete Client </a>&nbsp;&nbsp;
+        </TD>
+</TABLE>
+</FORM>
+
+</div>
+
+{% include 'footer.tmpl' %}
