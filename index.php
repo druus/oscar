@@ -2,7 +2,7 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
-** Version      1.0
+** Version      0.4.1
 ** Created by   Daniel Ruus
 ** Created      ??
 ** Modified     2019-01-31
@@ -10,7 +10,7 @@
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.4.0";
+$APP_VERSION="0.4.1";
 $APP_AUTHOR="Daniel Ruus";
 $APP_MODIFIED="2019-01-31";
 
