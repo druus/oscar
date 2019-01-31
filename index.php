@@ -2,12 +2,17 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
+** Version      1.0
+** Created by   Daniel Ruus
+** Created      ??
+** Modified     2019-01-31
+** Modified by  Daniel Ruus
 ** License      The MIT License (MIT) (See the file LICENSE)
-** Copyright (c) 2015, 2016 Daniel Ruus
+** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.3.3";
+$APP_VERSION="0.4.0";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2018-06-25";
+$APP_MODIFIED="2019-01-31";
 
 session_start();
 
@@ -30,6 +35,10 @@ include_once("classes/AdminUtils.class.php");
 //require("./include/authenticate.inc.php");
 
 ($_SERVER['REQUEST_METHOD'] == 'GET') ? $values = $_GET : $values = $_POST;
+
+if (!isset($values['cmd'])) {
+  $values['cmd'] = "";  // Initialize variable if not already set
+}
 
 // Read the configuration file config/config.ini.php and extract the
 // intresting bits
@@ -132,7 +141,7 @@ $utils = new Utilities( $dbh );
 $cfgData = array(
     'dbServer' => $DBSERVER,
     'dbName'   => $DBNAME,
-    'dbType'   => $DBTYPE,
+    'dbType'   => $DBDRIVER,
     'dbUser'   => $DBUSER,
     'assetCnt' => $assetCnt,
     'priv'     => $priv,
@@ -209,13 +218,14 @@ switch ($values['cmd'])
         break;
 
     case "CreateAsset":
-        $asset = $utils->createAsset( $values, $_SESSION['username'] );
+        //$asset = $utils->createAsset( $values, $_SESSION['username'] );
+        $asset = $dbh->createAsset( $values, $_SESSION['username'] );
         if ( $asset > 0 ) {
-            $assetData = $utils->getAssetData( $asset, $_SESSION['username'] );
-            $utils->setasset( $asset );
-            $utils->setuser( $_SESSION['username'] );
-            $utils->setcomment( 'Asset created' );
-            $utils->insertComment();
+            $assetData = $dbh->getAssetData( $asset, $_SESSION['username'] );
+            $dbh->setasset( $asset );
+            $dbh->setuser( $_SESSION['username'] );
+            $dbh->setcomment( 'Asset created' );
+            $dbh->insertComment();
         }
         $template = $twig->loadTemplate('asset_form2.tmpl');
         echo $template->render(array (
@@ -232,15 +242,25 @@ switch ($values['cmd'])
 
     case "UpdateAssetEntry":
         $asset = $values['assetno'];
+
         if ( isset($_SESSION['username']) ) {
-            $utils->updateAsset( $asset, $values, $_SESSION['username'] );
+            //$utils->updateAsset( $asset, $values, $_SESSION['username'] );
+            $dbh->updateAsset( $asset, $values, $_SESSION['username'] );
+            $dbh->setasset( $asset );
+						$dbh->setuser( $_SESSION['username'] );
+						$dbh->setcomment( 'Asset modified' );
+						$dbh->insertComment();
+            /*
 						$utils->setasset( $asset );
 						$utils->setuser( $_SESSION['username'] );
 						$utils->setcomment( 'Asset modified' );
 						$utils->insertComment();
+            */
         }
 
-        $assetData = $utils->getAssetData( $asset );
+
+        //$assetData = $utils->getAssetData( $asset );
+        $assetData = $dbh->getAssetData( $asset );
         $template = $twig->loadTemplate('asset_form2.tmpl');
         echo $template->render(array (
             'assetData'  => $assetData,
