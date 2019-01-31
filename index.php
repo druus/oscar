@@ -72,7 +72,9 @@ if ( isset($_SESSION['username']) && isset($_SESSION['password']) ) {
  *           The following will be phased out as the class Utilities will be replaced
  *           by Asset and DbHandler...
  */
+
 include_once("classes/Utilities.class.php");
+/*
 $utilDb = mysqli_connect( $DBSERVER, $DBUSER, $DBPASSWD, $DBNAME );
 if ( $utilDb->connect_error ) {
     echo "Database connection failed: " . $utilDb->connect_error;
@@ -86,6 +88,7 @@ if ( $utilDb->connect_error ) {
     //$depArray  = $utils->getDepartments(); // Get a list of departments
     //$supArray  = $utils->getSuppliers();   // Get a list of suppliers
 }
+*/
 
 /**
  * Create an instance of DbHandler and fetch data to be used in the asset form
@@ -107,6 +110,8 @@ try {
   ) );
   die(); // Not a very nice solution, but let's run with it for now
 }
+
+$utils = new Utilities( $dbh );
 
 /**
  * Construct an array with some useful data in it
@@ -172,7 +177,8 @@ switch ($values['cmd'])
         break;
 
     case "search_criteria":
-				$searchRes = $utils->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
+				//$searchRes = $utils->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
+        $searchRes = $dbh->searchAssets($values['search_category'], $values['search_department'], $values['search_client'], $values['search_manuf'], $values['search_text']);
         $cfgData['searchCnt'] = sizeof($searchRes);
 
         $template = $twig->loadTemplate('search_result.tmpl');
@@ -396,6 +402,6 @@ switch ($values['cmd'])
   ) );
 }
 // Close the database connection
-$utilDb->close();
+//$utilDb->close();
 
 ?>

@@ -217,6 +217,60 @@ class DbHandler {
 
     } // EOM suppliers()
 
+
+    /**
+     * Search för assets
+     *
+     * @return array
+     */
+    function searchAssets($search_category, $search_department, $search_client, $search_manuf, $search_text, $list_order = "asset")
+    {
+
+        $searchAsset =<<< EOQ
+SELECT DISTINCT(a.asset), a.manufacturer, a.model, a.description, c.category, d.dep_name AS department
+FROM asset a, category c, departments d, clients o, asset_history h
+WHERE a.category = c.id
+AND a.owner_dep = d.dep_id
+AND a.client = o.cid
+AND a.asset = h.asset
+EOQ;
+
+        if (isset($search_category))
+                $searchAsset .= " AND c.id IN (" . implode(",", $search_category) . ") ";
+
+        if (isset($search_department))
+                $searchAsset .= " AND d.dep_id IN (" . implode(",", $search_department) . ") ";
+
+        if (isset($search_client))
+                $searchAsset .= " AND a.client IN (" . implode(",", $search_client) . ") ";
+
+    if (isset($search_manuf))
+        $searchAsset .= " AND a.manufacturer IN ('" . implode("','", $search_manuf) . "') ";
+
+        if (isset($search_text))
+            $searchAsset .= " AND (a.asset LIKE '%$search_text%' OR manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
+
+        $searchAsset .= "ORDER BY " . $list_order;
+
+/*
+        $utildb = $this->getdb();
+        $res = $utildb->execute( $searchAsset );
+        if ( $res == false ) {
+            echo "ERROR: " . $this->getdb()->error;
+        } else {
+            return $res->fetch_all(MYSQLI_ASSOC);
+        }
+*/
+
+
+
+        if ( $stmt = $this->dbh->query($searchAsset) ) {
+            return $stmt->fetchAll();
+        }
+
+        return false;
+
+    } // EOM searchAssets(9
 } // EOM DbHandler()
 
 ?>

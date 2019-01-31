@@ -78,6 +78,14 @@ class AdminUtils {
     } // EOM getLatestAsset();
 
 
+    /**
+     * Search for assets
+     */
+    function searchAssets() {
+
+    } // EOM searchAssets()
+
+    
     /***************************************/
     /**         C A T E G O R I E S       **/
     /***************************************/

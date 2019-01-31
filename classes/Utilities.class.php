@@ -305,13 +305,23 @@ EOQ;
 
 
         $utildb = $this->getdb();
-        $res = $utildb->query( $searchAsset );
+        $res = $utildb->execute( $searchAsset );
         if ( $res == false ) {
             echo "ERROR: " . $this->getdb()->error;
         } else {
             return $res->fetch_all(MYSQLI_ASSOC);
         }
-    } // EOM searchAssets(9
+
+
+
+/*
+        if ( $stmt = $this->dbh->execute($searchAsset) ) {
+            return $stmt->fetchAll();
+        }
+*/
+        return false;
+
+    } // EOM searchAssets()
 
 
     /**
