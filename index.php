@@ -277,44 +277,44 @@ switch ($values['cmd'])
     /***************************************/
     /**     Deal with admin functions      */
     /***************************************/
-    case "admin-suppliers":
+    case "admin-categories":
         $formCmd = "";
         // Create an instance of AdminUtils
         try {
           $adminUtils = new AdminUtils( $DBNAME, $DBUSER, $DBPASSWD, $DBTYPE, $DBSERVER );
-          if ( $values['subcmd'] == "edit" && $values['suppid'] > 0 ) {
-              $suppliers = $adminUtils->getSupplier( $values['suppid'] );
-              $suppliers = $suppliers[0];
+          if ( $values['subcmd'] == "edit" && $values['catid'] > 0 ) {
+              $categories = $adminUtils->getCategory( $values['catid'] );
+              $categories = $categories[0];
               $formCmd = "update";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else if ( $values['subcmd'] == "new" ) {
               $formCmd = "create";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
-          } else if ( $values['subcmd'] == "delete" && $values['suppid'] > 0 ) {
-              $adminUtils->deleteSupplier( $values['suppid'] );
-              $suppliers = $adminUtils->getSuppliers();
-              $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
+          } else if ( $values['subcmd'] == "delete" && $values['catid'] > 0 ) {
+              $adminUtils->deleteCategory( $values['catid'] );
+              $categories = $adminUtils->getCategories();
+              $template = $twig->loadTemplate('admin-categories_list.tmpl');
           } else if ( $values['subcmd'] == "create" ) {
               if ( !$supplier = $adminUtils->createSupplier( $values['supplier'], $values['description'], $values['website'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $supplier . "\n"; }
               $suppliers = $adminUtils->getSupplier( $supplier );
               $suppliers = $suppliers[0];
               $formCmd = "update";
               $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
-          } else if ( $values['subcmd'] == "update" && $values['suppid'] > 0 ) {
-              $adminUtils->updateSupplier( $values['suppid'], $values['supplier'], $values['description'], $values['website'] );
-              $suppliers = $adminUtils->getSupplier( $values['suppid'] );
-              $suppliers = $suppliers[0];
+          } else if ( $values['subcmd'] == "update" && $values['catid'] > 0 ) {
+              $adminUtils->updateCategory( $values['catid'], $values['category'], $values['description'] );
+              $categories = $adminUtils->getCategory( $values['catid'] );
+              $categories = $categories[0];
               $formCmd = "update";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else {
-              $suppliers = $adminUtils->getSuppliers();
-              $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              $categories = $adminUtils->getCategories();
+              $template   = $twig->loadTemplate('admin-categories_list.tmpl');
           }
               echo $template->render( array(
                   'pageTitle'   => "OSCAR v3 Admin - Suppliers",
                   'cfgData'     => $cfgData,
                   'formCmd'     => $formCmd,
-                  'suppliers'   => $suppliers
+                  'categories'  => $categories
               ) );
         } catch(Exception $e) {
           $template= $twig->loadTemplate('error.tmpl');
@@ -324,6 +324,54 @@ switch ($values['cmd'])
           ));
         }
         break;
+
+        case "admin-suppliers":
+            $formCmd = "";
+            // Create an instance of AdminUtils
+            try {
+              $adminUtils = new AdminUtils( $DBNAME, $DBUSER, $DBPASSWD, $DBTYPE, $DBSERVER );
+              if ( $values['subcmd'] == "edit" && $values['suppid'] > 0 ) {
+                  $suppliers = $adminUtils->getSupplier( $values['suppid'] );
+                  $suppliers = $suppliers[0];
+                  $formCmd = "update";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else if ( $values['subcmd'] == "new" ) {
+                  $formCmd = "create";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else if ( $values['subcmd'] == "delete" && $values['suppid'] > 0 ) {
+                  $adminUtils->deleteSupplier( $values['suppid'] );
+                  $suppliers = $adminUtils->getSuppliers();
+                  $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              } else if ( $values['subcmd'] == "create" ) {
+                  if ( !$supplier = $adminUtils->createSupplier( $values['supplier'], $values['description'], $values['website'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $supplier . "\n"; }
+                  $suppliers = $adminUtils->getSupplier( $supplier );
+                  $suppliers = $suppliers[0];
+                  $formCmd = "update";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else if ( $values['subcmd'] == "update" && $values['suppid'] > 0 ) {
+                  $adminUtils->updateSupplier( $values['suppid'], $values['supplier'], $values['description'], $values['website'] );
+                  $suppliers = $adminUtils->getSupplier( $values['suppid'] );
+                  $suppliers = $suppliers[0];
+                  $formCmd = "update";
+                  $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              } else {
+                  $suppliers = $adminUtils->getSuppliers();
+                  $template = $twig->loadTemplate('admin-suppliers_list.tmpl');
+              }
+                  echo $template->render( array(
+                      'pageTitle'   => "OSCAR v3 Admin - Suppliers",
+                      'cfgData'     => $cfgData,
+                      'formCmd'     => $formCmd,
+                      'suppliers'   => $suppliers
+                  ) );
+            } catch(Exception $e) {
+              $template= $twig->loadTemplate('error.tmpl');
+              echo $template->render(array(
+                'pageTitle'  => 'OSCAR - ERROR',
+                'error'      => $e->getMessage()
+              ));
+            }
+            break;
 
     case "search":
     default:
