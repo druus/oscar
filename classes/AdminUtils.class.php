@@ -171,7 +171,7 @@ class AdminUtils {
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);
 
         if ( $stmt->execute() ) {
-            return $stmt->fetchAll();
+            return true;
         }
 
         return false;
@@ -183,13 +183,13 @@ class AdminUtils {
      * Delete a supplier
      * @return
      */
-    function deleteCategory( $supplier_id )
+    function deleteCategory( $category_id )
     {
-        $stmt = $this->dbh->prepare("DELETE FROM suppliers WHERE supp_id = :supplier_id");
-        $stmt->bindParam(':supplier_id', $supplier_id, PDO::PARAM_INT);
+        $stmt = $this->dbh->prepare("DELETE FROM category WHERE id = :category_id");
+        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
 
         if ( $stmt->execute() ) {
-            return $stmt->fetchAll();
+            return true;
         }
 
         return false;

@@ -335,7 +335,7 @@ switch ($values['cmd'])
               $formCmd = "create";
               $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else if ( $values['subcmd'] == "delete" && $values['catid'] > 0 ) {
-              $adminUtils->deleteCategory( $values['catid'] );
+              if ( !$adminUtils->deleteCategory( $values['catid'] ) ) { echo "Bugger, something is not right!<br/>Couldn't delete: " . $values['catid'] . "\n"; }
               $categories = $adminUtils->getCategories();
               $template = $twig->loadTemplate('admin-categories_list.tmpl');
           } else if ( $values['subcmd'] == "create" ) {
