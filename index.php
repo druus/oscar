@@ -319,13 +319,13 @@ switch ($values['cmd'])
               $categories = $adminUtils->getCategories();
               $template = $twig->loadTemplate('admin-categories_list.tmpl');
           } else if ( $values['subcmd'] == "create" ) {
-              if ( !$supplier = $adminUtils->createSupplier( $values['supplier'], $values['description'], $values['website'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $supplier . "\n"; }
-              $suppliers = $adminUtils->getSupplier( $supplier );
-              $suppliers = $suppliers[0];
+              if ( !$category = $adminUtils->createCategory( $values['category'], $values['description'], $_SESSION['username'] ) ) { echo "Bugger, something is not right!<br/>The last inserted ID we received is: " . $category . "\n"; }
+              $categories = $adminUtils->getCategory( $category );
+              $categories = $categories[0];
               $formCmd = "update";
-              $template = $twig->loadTemplate('admin-suppliers_edit.tmpl');
+              $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else if ( $values['subcmd'] == "update" && $values['catid'] > 0 ) {
-              $adminUtils->updateCategory( $values['catid'], $values['category'], $values['description'] );
+              $adminUtils->updateCategory( $values['catid'], $values['category'], $values['description'], $_SESSION['username'] );
               $categories = $adminUtils->getCategory( $values['catid'] );
               $categories = $categories[0];
               $formCmd = "update";

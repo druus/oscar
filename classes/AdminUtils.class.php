@@ -85,7 +85,7 @@ class AdminUtils {
 
     } // EOM searchAssets()
 
-    
+
     /***************************************/
     /**         C A T E G O R I E S       **/
     /***************************************/
@@ -128,14 +128,13 @@ class AdminUtils {
      * Create a new category
      *
      */
-    function createCategory( $supplier, $description, $website, $username  )
+    function createCategory( $category, $description, $username  )
     {
         $lastId = false;
         try {
-            $stmt = $this->dbh->prepare("INSERT INTO suppliers (supp_id, supplier, description, website, entry_created, entry_created_by) VALUES (NULL, :supplier, :description, :website, NOW(), :username)");
-            $stmt->bindParam(':supplier', $supplier);
+            $stmt = $this->dbh->prepare("INSERT INTO category (id, category, description, entry_created, entry_created_by) VALUES (NULL, :category, :description, NOW(), :username)");
+            $stmt->bindParam(':category', $category);
             $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':website', $website);
             $stmt->bindParam(':username', $username);
 
             $this->dbh->beginTransaction();
@@ -156,19 +155,20 @@ class AdminUtils {
 
         return $lastId;
 
-    } // EOM updateSupplier()
+    } // EOM updateCategory()
 
 
     /**
-     * Get details for a category
+     * Update a category
      *
      */
-    function updateCategory( $category_id, $category, $description )
+    function updateCategory( $category_id, $category, $description, $username )
     {
-        $stmt = $this->dbh->prepare("UPDATE category SET category = :category, description = :description, time_stamp = NOW() WHERE id = :category_id");
+        $stmt = $this->dbh->prepare("UPDATE category SET category = :category, description = :description, time_stamp = NOW(), entry_modified = NOW(), entry_modified_by = :username WHERE id = :category_id");
         $stmt->bindParam(':category', $category, PDO::PARAM_STR);
         $stmt->bindParam(':description', $description, PDO::PARAM_STR);
         $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
 
         if ( $stmt->execute() ) {
             return $stmt->fetchAll();
