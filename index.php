@@ -54,6 +54,18 @@ if ( $settings = parse_ini_file("config/config.ini.php", true) ) {
 }
 
 
+/**
+ * Maybe the user wants to login?
+ */
+if ( isset($values['cmd']) && $values['cmd'] == "checklogin" ) {
+  $auth = new Authenticate();
+  $user = $auth->login( $values['username'], $values['password'] );
+}
+
+if ( isset($values['cmd']) && $values['cmd'] == "logout" ) {
+  $auth = new Authenticate();
+  $user = $auth->logout();
+}
 
 /**
  * Check if the user is logged in or not
@@ -64,6 +76,7 @@ if ( isset($_SESSION['username']) && isset($_SESSION['password']) ) {
 	$auth = new Authenticate();
 	$priv = $auth->authenticate( $_SESSION['username'], $_SESSION['password'] );
 }
+
 
 /**
  * Test to load data before the asset form is displayed in preparation of using templates
@@ -144,6 +157,11 @@ switch ($values['cmd'])
         ));
         break;
 
+    case "login":
+        $template = $twig->loadTemplate('login.tmpl');
+        echo $template->render(array());
+        break;
+
     case "new":
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "CreateAsset";
@@ -162,7 +180,7 @@ switch ($values['cmd'])
     case "Edit":
         $asset = $values['asset'];
         //$assetData = $utils->getAssetData( $asset );
-	$assetData = $dbh->getAssetData( $asset );
+	      $assetData = $dbh->getAssetData( $asset );
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
         echo $template->render(array (

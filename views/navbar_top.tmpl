@@ -40,9 +40,11 @@
       <li><a>User: {{ cfgData.userName }}</a></li>
       <li><a href="?cmd=help">Help</a></li>
 {% if cfgData.priv == false %}
-        <li><a href="login.php?cmd=login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <!--<li><a href="login.php?cmd=login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>-->
+        <li><a href="index.php?cmd=login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 {% else %}
-            <li><a href="login.php?cmd=logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+            <!--<li><a href="login.php?cmd=logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>-->
+            <li><a href="index.php?cmd=logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
 {% endif %}
     </ul>
 
