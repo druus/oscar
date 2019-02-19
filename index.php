@@ -5,12 +5,12 @@
 ** Version      0.4.1
 ** Created by   Daniel Ruus
 ** Created      ??
-** Modified     2019-01-31
+** Modified     2019-02-19
 ** Modified by  Daniel Ruus
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.4.1";
+$APP_VERSION="0.5.0";
 $APP_AUTHOR="Daniel Ruus";
 $APP_MODIFIED="2019-01-31";
 
@@ -190,10 +190,14 @@ switch ($values['cmd'])
         $asset = $values['asset'];
         //$assetData = $utils->getAssetData( $asset );
 	      $assetData = $dbh->getAssetData( $asset );
+        $poItems   = $dbh->getPOItems( $asset );
+        if ( sizeof( $poItems ) > 0 ) { $poItemsExists = true; } else { $poItemsExists = false; }
         $template = $twig->loadTemplate('asset_form2.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
         echo $template->render(array (
             'assetData'  => $assetData,
+            '$poItemsExists' => $poItemsExists,
+            'poItems'    => $poItems,
             'categories' => $catArray,
             'status'     => $statArray,
             'departments'=> $depArray,

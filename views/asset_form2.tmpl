@@ -180,6 +180,11 @@
     <div class="col-sm-6">
       <label for="po_number" class="visible-md visible-lg">PO number</label>
       <input type="text" class="form-control visible-md visible-lg" id="po_number" name="po_number" placeholder="PO number" value="{{ assetData.po_number }}">
+      {% if poItems %}
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+          View PO items
+      </button>
+      {% endif %}
     </div>
     <div class="col-sm-6">
       <label for="manuf_invoice" class="visible-md visible-lg">Invoice</label>
@@ -189,6 +194,53 @@
 
 </div>
 
+{# If there are any purchase order items for the asset list them in a model window #}
+{% if poItems %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Purchase Order Items</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+
+          <table>
+            <tr>
+              <td>Item</td>
+              <td>Quantity</td>
+              <td>Price</td>
+            </tr>
+
+            {% for poItem in poItems %}
+
+            <tr>
+              <td>{{ poItem.item}}</td>
+              <td>Description</td>
+              <td>{{ poItem.qty }}</td>
+              <td>{{ poItem.price }}</td>
+            </tr>
+
+            {% endfor %}
+            
+        </table>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{# End Modal window for PO items #}
 
 {# Show a submit button, but only if the user is logged in #}
 {% if cfgData.priv != false %}
