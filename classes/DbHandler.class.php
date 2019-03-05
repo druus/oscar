@@ -168,6 +168,38 @@ class DbHandler {
 
     } // EOM getAssetData()
 
+
+    /**
+     * Get purchase order items
+     * @return array
+     */
+    function getPOitems( $asset )
+    {
+      if ( ! is_numeric( $asset ) ) {
+        throw new Exception( "Asset '$asset' is not a numerical value");
+      } else {
+
+        try {
+          $stmt = $this->dbh->prepare("SELECT a.asset AS asset, p.po_id AS po_id, p.item AS item, p.description, p.supplier_artno, p.qty AS qty, p.price FROM po_items p, asset a WHERE p.po_id = a.po_number AND asset = :asset");
+          $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
+
+          if ( $stmt->execute() ) {
+            $assetData = $stmt->fetchAll();
+            //if ( is_numeric( $assetData['asset'] ) && $assetData['asset'] > 0 ) {
+              return $assetData;
+            //} else {
+            //  throw new Exception( "PO items for asset '$asset' not found");
+            //}
+          }
+        } catch (Exception $e) {
+          throw new Exception($e->getMessage());
+        }
+      }
+
+      return false;
+    } // EOM getPOItems()
+
+
     /**
      * Retrieve a list of categories
      * @return array

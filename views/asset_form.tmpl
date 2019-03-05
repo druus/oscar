@@ -1,90 +1,84 @@
 {% include 'header.tmpl' %}
 
 {%include 'navbar_top.tmpl' %}
-{#include 'navbar_left.tmpl' #}
 
 <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
-<div class="main">
-<!--**************************************************************************
-**
-** ASSET FORM
-**
-***************************************************************************-->
-<form name="asset" action="" method="post">
-<input type="hidden" name="name" value="Asset">
-<input type="hidden" name="cmd" value="CreateNewAsset">
+<div class="container">
 
-<table width="95%" align="center" border="0" bgcolor="#f3f3f3">
-<tr>
-    <td colspan="4" align="center" valign="middle"><h2>New asset</h2></td>
-</tr>
 
-<tr>
-    <td colspan="4">
-    <table width="98%" cellspacing="0" cellpadding="0" border="0">
-    <tr>
-      <td bgcolor="#CCCCCC" width="32" align="center">
-          <abbr title="New">
-          <a href="/~daniel/oscar_v3/index.php?cmd=new" onMouseOver="document.img_new.src='images/New_Active.gif';" onMouseOut="document.img_new.src='images/New_Inactive.gif';">
-          <img src="images/New_Inactive.gif" border="0" name="img_new"></a>
-          </abbr>
-      </td>
+<form class="form-horizontal" action="index.php" method="post">
+<!--<input type="hidden" name="name" value="Asset">-->
+<input type="hidden" name="assetno" value="{{ assetData.asset }}"/>
+<input type="hidden" name="cmd" value="{{ cfgData.cmd }}">
 
-      <td bgcolor="#CCCCCC" width="32" align="center">
-          <abbr title="Save">
-          <a href="#" onClick="document.forms['asset'].submit();" onMouseOver="document.img_edit.src='images/Edit_Active.gif';" onMouseOut="document.img_edit.src='images/Edit_Inactive.gif';">
-          <img src="images/Edit_Inactive.gif" border="0" name="img_edit" /></a>
-          </abbr>
-      </td>
+<div class="row">
 
-      <td bgcolor="#CCCCCC" width="32" align="center">
-          <abbr title="Duplicate asset">
-          <a href="/~daniel/oscar_v3/index.php?cmd=DuplicateAsset&amp;asset=" onClick="return confirmSubmit('Are you sure you want to duplicate this asset?');" onMouseOver="document.img_duplicate.src='images/Duplicate_Active.gif';" onMouseOut="document.img_duplicate.src='images/Duplicate_Inactive.gif';">
-          <img src="images/Duplicate_Inactive.gif" border="0" name="img_duplicate" /></a>
-          </abbr>
-      </td>
+  <div class="form-group">
+    <div class="col-sm-2">
+      <label for="asset" class="control-label">Asset</label>
+      <input type="text" class="form-control" id="asset" name="asset" placeholder="Asset" disabled="disabled" value="{{ assetData.asset }}">
+    </div>
+    <div class="col-sm-4">
+      <label for="productcode" class="control-label">Productcode</label>
+      <input type="text" class="form-control" id="productcode" name="productcode" placeholder="Productcode" value="{{ assetData.productcode }}">
+    </div>
+    <div class="col-sm-6">
+      <label for="introduced" class="control-label">Introduced</label>
+      <input type="text" class="form-control" id="introduced" name="introduced" placeholder="Introduced" value="{{ assetData.introduced }}">
+    </div>
+  </div>
 
-      <td bgcolor="#CCCCCC" >
-        &nbsp;<abbr title="Edit permissions"><a href="javascript:EditPermissions(0);">Permissions</a></abbr>
-      </td>
-    </tr>
-    </table>
-</tr>
+</div>
 
-<TR>
-	<TD>Asset</TD>
-	<TD>
-		<INPUT TYPE="text" SIZE="6" NAME="searchstring" CLASS="input-style" VALUE="{{ assetData.asset }}">
-		&nbsp;&nbsp;&nbsp;&nbsp;Productcode&nbsp;<input type="text" size="6" name="productcode" class="input-style" value=" {{ assetData.productcode }}">
-	</TD>
+<div class="row">
 
-	<TD>Introduction</TD>
-	<TD>
-		<INPUT TYPE="text" NAME="introduced" CLASS="input-style" VALUE=""  >
-	</TD>
-</TR>
+  <div class="form-group">
+    <div class="col-sm-6">
+      <label for="manufacturer">Make</label>
+      <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer" value="{{ assetData.manufacturer }}">
+    </div>
+    <div class="col-sm-6">
+      <label for="model">Model</label>
+      <input type="text" class="form-control" id="model" name="model" placeholder="Model" value="{{ assetData.model }}">
+    </div>
+  </div>
 
-<tr>
-    <td><abbr title="Manufacturer of the product.">Make</abbr></td>
-    <td>
-        <INPUT TYPE="text" NAME="manufacturer" SIZE="40" CLASS="input-style" VALUE="{{ assetData.manufacturer }}" >
-    </td>
+</div>
 
-	<TD>Model</TD>
-	<TD>
-		<INPUT TYPE="text" NAME="model" SIZE="40" CLASS="input-style" VALUE="{{ assetData.model }}" >
-	</TD>
-</TR>
+<div class="row">
 
-<tr>
-    <td><abbr title="Serial number of the asset, if applicable.">Serial No</abbr></td>
-    <td>
-        <input type="text" name="serial" class="input-style" value="{{ assetData.serial }}" >
-    </td>
-    <td><abbr title="Each asset should belong to a specified category, indicating roughly what the asset is, eg CD-ROM disk, computer hardware or similar.">Category</abbr></td>
-    <td>
-      <select name="category" class="input-style">
-      {% for category in categories %}
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label for="description">Description</label>
+      <input type="text" class="form-control" id="description" name="description" placeholder="Description" value="{{ assetData.description }}">
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label for="long_description">Long description</label>
+      <textarea class="form-control" rows="4" id="long_description" name="long_description" placeholder="Description">{{ assetData.long_description }}</textarea>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="form-group">
+    <div class="col-sm-6">
+      <label for="serial">Serial</label>
+      <input type="text" class="form-control" id="serial" name="serial" placeholder="Serial number" value="{{ assetData.serial }}">
+    </div>
+    <div class="col-sm-6">
+      <label for="category">Category</label>
+      <select class="form-control" name="category" id="category">
+        <option value="0">No status selected</option>
+        {% for category in categories %}
         {% if category.id == assetData.category %}
           <option value="{{ category.id }}" selected>{{ category.category }}</option>
         {% else %}
@@ -92,241 +86,211 @@
         {% endif %}
       {% endfor %}
       </select>
-
-    </td>
-</tr>
-
-<tr>
-	<td>Description</td>
-	<td colspan="3">
-		<input type="text" name="description" class="input-style" value="{{ assetData.description }}" size="80" >
-	</td>
-
-</tr>
-
-<tr>
-    <td>Location</td>
-    <td>
-        <input type="text" name="original_location" size="20" class="input-style" value="" >
-        <input type="text" name="network_port" size="6" class="input-style-protected" onFocus='javascript:blur();' value="" >
-        <a href="javascript:DisplayFloorLayout(document.asset.original_location.value, document.asset.network_port.value,document.asset.computer_user.value);">[View]</a>
-        <a href="javascript:EditFloorLayout();">&nbsp;[Edit]</a>
-    </td>
-
-    <td><abbr title="Type of software license where applicable, for example: Multi Volume, OEM, GPL">Software license type</abbr></td>
-    <td>
-      <select name="license_type" class="input-style">
-	<option value="0">Not Selected</option>
-        <option value="10" >Commercial</option>
-        <option value="2" >GNU / General Public License</option>
-        <option value="6" >Mac OS X</option>
-        <option value="5" >Microsoft OSL</option>
-        <option value="3" >Open Source License v2.1</option>
-        <option value="8" >Windows Vista Business</option>
-        <option value="7" >Windows Vista HP OEM</option>
-        <option value="9" >Windows Vista Ultimate</option>
-        <option value="1" >Windows XP EULA</option>
-        <option value="4" >Windows XP OEM</option>
-      </select>
-		<!-- <input type="text" name="license_type" size="20" class="input-style" value="" > -->
-	</td>
-</tr>
-<tr>
-    <td>Parent computer</td>
-    <td>
-        <!-- <input type="hidden" name="parent_computer" value="UK-224" > -->
-        <input type="text" name="parent_computer" size="20" class="input-style" value="" >
-        <a href="javascript:ViewCompDetails(document.asset.parent_computer.value);">[View]</a>&nbsp;
-        <a href="javascript:ListComputers(0);">[List computers]</a>
-    </td>
-
-    <td><abbr title="License key (mainly for OEM licensed software)">License key (if applicable)</abbr></td>
-	<td>
-		<input type="text" name="license_key" size="30" class="input-style" value="" >
-	</td>
-</tr>
-
-<tr>
-    <td><abbr title="Name of the principal user, if applicable">User</abbr></td>
-    <td>
-        <input type="hidden" name="computer_user" value="">
-        <input type="text" name="computer_user_full_name" size="20" class="input-style-protected" value="" onFocus="blur();">
-        <a href="javascript:ListUsers(0);">[List users]</a>
-    </td>
-
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-</tr>
-
-<tr>
-    <td><abbr title="Each asset will be in a STATUS level, eg Active, Missing, Disposed">Status</abbr></td>
-    <td>
-        <select name="status" class="input-style">
-        {% for stat in status %}
-        <option value="{{ stat.id }}">{{ stat.status }}</option>
-        {% endfor %}
-        </select>
-    </td>
-
-    <td>&nbsp;</td>
-    <td>
-        <!-- <input type="text" name="status_change" value="" > -->
-        &nbsp;
-    </td>
-</tr>
-
-<tr>
-    <td><abbr title="Owner of the asset">Owner</abbr></td>
-    <td>
-    <select name="client" class="input-style"> 
-      <option value="12" >Annette McCarthy</option>
-      <option value="10" >Daniel Ruus</option>
-    </select>
-  </td>
-  <TD>Active</TD>
-  <TD>
-    <SELECT NAME="active" CLASS="input-style"> 
-      <OPTION VALUE="Yes" SELECTED>Yes
-      <OPTION VALUE="No">No
-    </SELECT>
-  </TD>
-</TR>
-
-<tr>
-  <td><abbr title="Name of the person within AQE who is responsible for the asset.">Contact</abbr></td>
-  <td>
-    <select name="owner" class="input-style"> 
-      <option value="263" > </option>
-      <option value="121" >Alan McDermid</option>
-      <option value="264" >Annette McCarthy</option>
-      <option value="259" >Caroline Wiltén</option>
-      <option value="258" >Charlotte Lindberg</option>
-      <option value="1" >Daniel Ruus</option>
-      <option value="245" >David Dickinson</option>
-      <option value="13" >Felim Whiteley</option>
-      <option value="262" >Hej Hopp</option>
-      <option value="22" >Iain Martin</option>
-      <option value="18" >Kermit The Frog</option>
-      <option value="192" >Mannen Muffel</option>
-      <option value="21" >Maria Garber</option>
-      <option value="246" >Mattia Mariotti</option>
-      <option value="248" >Michal Skonieczny</option>
-      <option value="249" >Michea Giuni</option>
-      <option value="247" >Nikita Chtcheglov</option>
-      <option value="261" >No Name</option>
-      <option value="6" >Roland Lansbergen</option>
-      <option value="254" >Sabina Sötnos</option>
-      <option value="257" >Sabina Kärlek</option>
-      <option value="235" >Simon Ledger</option>
-      <option value="91" >Stephen Innes</option>
-      <option value="215" >Tracy Maxwell</option>
-      <option value="19" >UKHelpdesk DOH</option>
-    </select>
-  </td>
-
-  <td><abbr title="AQ department the asset is assigned to.">Department</abbr></td>
-  <td>
-    <select name="dep_id" class="input-style"> 
-      <option value="6" >Home</option>
-      <option value="7" >Home Office</option>
-      <option value="1" >IS</option>
-    </select>
-  </td>
-</tr>
-
-<TR>
-	<TD>P.O. number</TD>
-	<TD>
-		<INPUT TYPE="text" NAME="po_number" SIZE="20" CLASS="input-style" value="{{ assetData.po_number }}">
-		<a href="javascript:DisplayPurchaseOrder(document.asset.po_number.value);">[View PO items]</a>
-	</TD>
-	<td><abbr title="The suppliers invoice number">Suppliers invoice</abbr></td>
-
-	<TD>
-		<INPUT TYPE="text" NAME="manuf_invoice" CLASS="input-style" VALUE="{{ assetData.manuf_invoice }}">
-	</TD>
-</TR>
-<tr>
-	<td><abbr title="The suppliers product code/article number">Product code</abbr></td>
-	<td>
-		<input type="text" name="product_code" size="40" class="input-style" value="">
-	</td>
-
-	<td><abbr title="Name of the supplier">Supplier</abbr></td>
-	<td>
-		<input type="text" name="supplier" size="20" class="input-style-protected" value="{{ assetData.supplier }}" onfocus='javascript:blur();'><a href="javascript:ListSuppliers(0);">&nbsp;[List suppliers]</a>
-	</td>
-</tr>
-
-
-<!-- Manufacturers product code -->
-<tr>
-    <td><abbr title="The manufacturers product code/article number">Manufacturers artno</abbr></td>
-    <td>
-        <input type="text" name="manuf_artno" size="20" class="input-style" value="">
-    </td>
-    <td><abbr title="The suppliers article number/product code">Suppliers artno</abbr></td>
-    <td>
-        <input type="text" name="supplier_artno" size="20" class="input-style" value="">
-
-    </td>
-</tr>
-
-<!-- Barcode -->
-<tr>
-    <td><abbr title="The manufacturers barcode">Barcode</abbr></td>
-    <td>
-        <input type="text" name="barcode" size="20" class="input-style" value="">
-    </td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-</tr>
-<!-- End barcode -->
-
-<tr>
-	<td valign="top">Comments</td>
-	<td colspan=3>
-		<textarea rows="8" cols="100" name="comment" class="input-style"></textarea>
-	</td>
-</tr>
-<!-- Display info about the user who created/modified the asset entry -->
-<tr>
-	<td>Entry created by</td>
-	<td>
-		<input type="text" name="" size="30" class="input-style-protected" onFocus='javascript:blur();' value="{{ assetData.asset_entry_created_by }}" >
-	</td>
-
-	<td>Modified by</td>
-	<td>
-		<input type="text" name="" size="30" class="input-style-protected" onFocus='javascript:blur();' value="{{ assetData.asset_modified_by }}" >
-	</td>
-</tr>
-<tr>
-	<td>Creation time</td>
-	<td>
-
-		<input type="text" name="" size="22" class="input-style-protected" onFocus='javascript:blur();' value="{{ assetData.asset_entry_created }}" >
-	</td>
-
-	<td>Modification time</td>
-	<td>
-		<input type="text" name="" size="22" class="input-style-protected" onFocus='javascript:blur();' value="{{ assetData.asset_modified }}" >
-	</td>
-</tr>
-
-<!-- List the history of any changes made to the asset. -->
-
-<!-------------------------------------------------------------------------
- *
- * Display any existing images
- *
--------------------------------------------------------------------------!>
-
-</table>
-</form>
-<br/>
-
+    </div>
+  </div>
 
 </div>
-{% include 'footer.tmpl' %}
 
+<div class="row">
+
+  <div class="form-group">
+    <div class="col-sm-6">
+      <label for="status">Status</label>
+       <select name="status" id="status" class="form-control">
+         <option value="0">No status selected</option>
+        {% for stat in status %}
+        {% if stat.id == assetData.status %}
+          <option value="{{ stat.id }}" selected>{{ stat.status }}</option>
+        {% else %}
+          <option value="{{ stat.id }}">{{ stat.status }}</option>
+        {% endif %}
+        {% endfor %}
+        </select>
+      </select>
+    </div>
+    <div class="col-sm-6">
+      <label for="owner_dep">Department</label>
+      <select name="owner_dep" id="owner_dep" class="form-control">
+        <option value="0">No department selected</option>
+        {% for dep in departments %}
+        {% if dep.id == assetData.owner_dep %}
+          <option value="{{ dep.id }}" selected>{{ dep.department }}</option>
+        {% else %}
+          <option value="{{ dep.id }}">{{ dep.department }}</option>
+        {% endif %}
+        {% endfor %}
+        </select>
+      </select>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="form-group">
+    <div class="col-sm-6">
+      <label for="client">Client/user</label>
+      <select name="client" id="client" class="form-control">
+        <option value="0">No client selected</option>
+        {% for client in clients %}
+        {% if client.id == assetData.client %}
+          <option value="{{ client.id }}" selected>{{ client.client }}</option>
+        {% else %}
+          <option value="{{ client.id }}">{{ client.client }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-6">
+      <label for="barcode">Barcode</label>
+      <input type="text" class="form-control" id="barcode" name="barcode" placeholder="Barcode" value="{{ assetData.barcode }}">
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="form-group">
+    <div class="col-sm-6">
+      <label for="supplier">Supplier</label>
+      <select name="supplier" id="supplier" class="form-control">
+        <option value="0">Unknown</option>
+        {% for supplier in suppliers %}
+        {% if supplier.id == assetData.supplier %}
+          <option value="{{ supplier.id }}" selected>{{ supplier.supplier }}</option>
+        {% else %}
+          <option value="{{ supplier.id }}">{{ supplier.supplier }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-6">
+      <label for="supplier_artno">Suppliers artno</label>
+      <input type="text" class="form-control" id="supplier_artno" name="supplier_artno" placeholder="Suppliers artno" value="{{ assetData.supplier_artno }}">
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="form-inline form-group">
+    <div class="col-sm-6">
+      <label for="po_number" class="visible-md visible-lg">PO number</label>
+      <input type="text" class="form-control visible-md visible-lg" id="po_number" name="po_number" placeholder="PO number" value="{{ assetData.po_number }}">
+      {% if poItems %}
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+          View PO items
+      </button>
+      {% endif %}
+    </div>
+    <div class="col-sm-6">
+      <label for="manuf_invoice" class="visible-md visible-lg">Invoice</label>
+      <input type="text" class="form-control visible-md visible-lg" id="manuf_invoice" name="manuf_invoice" placeholder="Invoice" value="{{ assetData.manuf_invoice }}">
+    </div>
+  </div>
+
+</div>
+
+{# If there are any purchase order items for the asset list them in a model window #}
+{% if poItems %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Purchase Order Items</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+
+          <table>
+            <tr>
+              <td>Item</td>
+              <td>Quantity</td>
+              <td>Price</td>
+            </tr>
+
+            {% for poItem in poItems %}
+
+            <tr>
+              <td>{{ poItem.item}}</td>
+              <td>{{ poItem.qty }}</td>
+              <td>{{ poItem.price }}</td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{# End Modal window for PO items #}
+
+{# Show a submit button, but only if the user is logged in #}
+{% if cfgData.priv != false %}
+<div class="row">
+
+  <div class="btn-group">
+    <div class="col-sm-12">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <!--<button type="button" class="btn btn-primary">Duplicate</button>-->
+      <!--<button type="button" class="btn btn-primary">Delete</button>-->
+    </div>
+  </div>
+
+</div>
+{% endif %}
+
+</form>
+
+
+{# Time stamps #}
+<div class="row">
+
+  <div class="form-inline form-group">
+    <div class="col-sm-6">
+      <label for="asset_entry_created_by" class="control-label">Entry created by</label>
+      <p class="form-control-static">{{ assetData.asset_entry_created_by }}</p>
+    </div>
+    <div class="col-sm-6">
+      <label for="asset_modified_by" class="control-label">Entry modified by</label>
+      <p class="form-control-static">{{ assetData.asset_modified_by }}</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="form-inline form-group">
+    <div class="col-sm-6">
+      <label for="asset_entry_created" class="control-label">Entry created</label>
+      <p class="form-control-static">{{ assetData.asset_entry_created }}</p>
+    </div>
+    <div class="col-sm-6">
+      <label for="asset_modified" class="control-label">Entry modified</label>
+      <p class="form-control-static">{{ assetData.asset_modified }}</p>
+    </div>
+  </div>
+
+</row>
+
+</div> {# End <div class="container..." #}
+
+
+{% include 'footer.tmpl' %}

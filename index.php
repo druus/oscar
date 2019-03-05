@@ -2,7 +2,7 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
-** Version      1.0
+** Version      0.4.1
 ** Created by   Daniel Ruus
 ** Created      ??
 ** Modified     2019-01-31
@@ -10,7 +10,7 @@
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.4.0";
+$APP_VERSION="0.4.1";
 $APP_AUTHOR="Daniel Ruus";
 $APP_MODIFIED="2019-01-31";
 
@@ -172,7 +172,7 @@ switch ($values['cmd'])
         break;
 
     case "new":
-        $template = $twig->loadTemplate('asset_form2.tmpl');
+        $template = $twig->loadTemplate('asset_form.tmpl');
         $cfgData['cmd'] = "CreateAsset";
         echo $template->render(array (
             'categories' => $catArray,
@@ -190,10 +190,14 @@ switch ($values['cmd'])
         $asset = $values['asset'];
         //$assetData = $utils->getAssetData( $asset );
 	      $assetData = $dbh->getAssetData( $asset );
-        $template = $twig->loadTemplate('asset_form2.tmpl');
+        $poItems   = $dbh->getPOItems( $asset );
+        if ( sizeof( $poItems ) > 0 ) { $poItemsExists = true; } else { $poItemsExists = false; }
+        $template = $twig->loadTemplate('asset_form.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
         echo $template->render(array (
             'assetData'  => $assetData,
+            '$poItemsExists' => $poItemsExists,
+            'poItems'    => $poItems,
             'categories' => $catArray,
             'status'     => $statArray,
             'departments'=> $depArray,
@@ -227,7 +231,7 @@ switch ($values['cmd'])
             $dbh->setcomment( 'Asset created' );
             $dbh->insertComment();
         }
-        $template = $twig->loadTemplate('asset_form2.tmpl');
+        $template = $twig->loadTemplate('asset_form.tmpl');
         echo $template->render(array (
             'assetData'  => $assetData,
             'categories' => $catArray,
@@ -261,7 +265,7 @@ switch ($values['cmd'])
 
         //$assetData = $utils->getAssetData( $asset );
         $assetData = $dbh->getAssetData( $asset );
-        $template = $twig->loadTemplate('asset_form2.tmpl');
+        $template = $twig->loadTemplate('asset_form.tmpl');
         echo $template->render(array (
             'assetData'  => $assetData,
             'categories' => $catArray,
@@ -335,7 +339,7 @@ switch ($values['cmd'])
               $formCmd = "create";
               $template = $twig->loadTemplate('admin-categories_edit.tmpl');
           } else if ( $values['subcmd'] == "delete" && $values['catid'] > 0 ) {
-              $adminUtils->deleteCategory( $values['catid'] );
+              if ( !$adminUtils->deleteCategory( $values['catid'] ) ) { echo "Bugger, something is not right!<br/>Couldn't delete: " . $values['catid'] . "\n"; }
               $categories = $adminUtils->getCategories();
               $template = $twig->loadTemplate('admin-categories_list.tmpl');
           } else if ( $values['subcmd'] == "create" ) {
