@@ -2,17 +2,17 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
-** Version      0.4.1
+** Version      0.5.0
 ** Created by   Daniel Ruus
 ** Created      ??
-** Modified     2019-01-31
+** Modified     2019-11-07
 ** Modified by  Daniel Ruus
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.4.1";
+$APP_VERSION="0.5.0";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2019-01-31";
+$APP_MODIFIED="2019-11-07";
 
 session_start();
 
@@ -44,7 +44,8 @@ if (!isset($values['cmd'])) {
 // intresting bits
 if ( $settings = parse_ini_file("config/config.ini.php", true) ) {
 
-    $DBNAME   = $settings['database']['schema'];
+    $DBNAME   = $settings['database']['dbname'];
+    $DBSCHEMA = $settings['database']['schema'];
     $DBUSER   = $settings['database']['username'];
     $DBPASSWD = $settings['database']['password'];
     $DBSERVER = $settings['database']['host'];
@@ -116,9 +117,9 @@ if ( $utilDb->connect_error ) {
  * Create an instance of DbHandler and fetch data to be used in the asset form
  */
 try {
-    $dbh = new DbHandler( $DBNAME, $DBUSER, $DBPASSWD, $DBDRIVER, $DBSERVER );
+    $dbh = new DbHandler( $DBNAME, $DBUSER, $DBPASSWD, $DBDRIVER, $DBSERVER, $DBSCHEMA );
     $assetCnt = $dbh->getCount();
-		$catArray  = $dbh->categories();
+    $catArray  = $dbh->categories();
     $arClients = $dbh->clients();
 		$depArray  = $dbh->departments();
 		$manufArray = $dbh->manufacturers();

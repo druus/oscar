@@ -68,7 +68,7 @@ class DbHandler {
   		return $this->user;
   	}
 
-    function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost" )
+    function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost", $schema = "" )
     {
 
         $this->dbname   = $name;
@@ -83,8 +83,17 @@ class DbHandler {
             $this->dbh = new PDO( $dsn, $this->dbuser, $this->dbpasswd );
         } catch (PDOException $e) {
             //echo "Connection failed: " . $e->getMessage();
-            throw new Exception( $e->getMessage() );
+            throw new Exception( $e->getMessage() . " (dsn:" . $dsn . ")" );
         }
+
+	// If we are using PostgreSQL, set schema
+	if ( $type == "pgsql" ) {
+		try {
+			$this->dbh->exec("SET search_path TO " . $schema);
+		} catch (PDOException $e) {
+			throw new Exception( $e->getMessage() );
+		}
+	}
 
         return $this->dbh;
 
@@ -321,7 +330,8 @@ EOQ;
         $searchAsset .= " AND a.manufacturer IN ('" . implode("','", $search_manuf) . "') ";
 
         if (isset($search_text))
-            $searchAsset .= " AND (a.asset LIKE '%$search_text%' OR manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
+            #$searchAsset .= " AND (a.asset LIKE '%$search_text%' OR manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
+            $searchAsset .= " AND (manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
 
         $searchAsset .= "ORDER BY " . $list_order;
 
@@ -335,11 +345,16 @@ EOQ;
         }
 */
 
+	#print "SQL-statement: " . $searchAsset . "<br/>\n"; die();
 
-
-        if ( $stmt = $this->dbh->query($searchAsset) ) {
-            return $stmt->fetchAll();
-        }
+	// Run the query
+	try {
+        	if ( $stmt = $this->dbh->query($searchAsset) ) {
+          		return $stmt->fetchAll();
+		}
+        } catch ( PDOException $e ) {
+		throw new Exception( $e->getMessage() );
+	}
 
         return false;
 
