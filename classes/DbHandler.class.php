@@ -68,7 +68,7 @@ class DbHandler {
   		return $this->user;
   	}
 
-    function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost" )
+    function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost", $schema = "" )
     {
 
         $this->dbname   = $name;
@@ -83,8 +83,17 @@ class DbHandler {
             $this->dbh = new PDO( $dsn, $this->dbuser, $this->dbpasswd );
         } catch (PDOException $e) {
             //echo "Connection failed: " . $e->getMessage();
-            throw new Exception( $e->getMessage() );
+            throw new Exception( $e->getMessage() . " (dsn:" . $dsn . ")" );
         }
+
+	// If we are using PostgreSQL, set schema
+	if ( $type == "pgsql" ) {
+		try {
+			$this->dbh->exec("SET search_path TO " . $schema);
+		} catch (PDOException $e) {
+			throw new Exception( $e->getMessage() );
+		}
+	}
 
         return $this->dbh;
 
@@ -321,7 +330,8 @@ EOQ;
         $searchAsset .= " AND a.manufacturer IN ('" . implode("','", $search_manuf) . "') ";
 
         if (isset($search_text))
-            $searchAsset .= " AND (a.asset LIKE '%$search_text%' OR manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
+            #$searchAsset .= " AND (a.asset LIKE '%$search_text%' OR manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
+            $searchAsset .= " AND (manufacturer LIKE '%$search_text%' OR model LIKE '%$search_text%' OR serial LIKE '%$search_text%' OR a.description LIKE '%$search_text%' OR a.comment LIKE '%$search_text%' OR parent_id LIKE '%$search_text%' OR h.comment LIKE '%$search_text%' OR a.barcode LIKE '%$search_text%' OR a.supplier_artno LIKE '%$search_text%') ";
 
         $searchAsset .= "ORDER BY " . $list_order;
 
@@ -335,11 +345,16 @@ EOQ;
         }
 */
 
+	#print "SQL-statement: " . $searchAsset . "<br/>\n"; die();
 
-
-        if ( $stmt = $this->dbh->query($searchAsset) ) {
-            return $stmt->fetchAll();
-        }
+	// Run the query
+	try {
+        	if ( $stmt = $this->dbh->query($searchAsset) ) {
+          		return $stmt->fetchAll();
+		}
+        } catch ( PDOException $e ) {
+		throw new Exception( $e->getMessage() );
+	}
 
         return false;
 
@@ -420,26 +435,51 @@ EOQ;
      * Insert a comment into the history table
      */
     function insertComment()
-  	{
-  		$asset = $this->getasset();
-  		$comment = $this->getcomment();
-  		$user = $this->getuser();
+    {
+        $asset = $this->getasset();
+        $comment = $this->getcomment();
+        $user = $this->getuser();
 
-  		// Construct an INSERT statement
-  		$insLog = "INSERT INTO asset_history ";
-  		$insLog .= "(asset, comment, updated_by, updated_time) ";
-  		$insLog .= "VALUES ('" . $asset . "', ";
-  		$insLog .= "'" . $comment . "', ";
-  		$insLog .= "'" . $user . "', ";
-  		$insLog .= "NOW()) ";
+        if ( ! is_numeric( $asset ) ) {
+            throw new Exception( "Asset '$asset' is not a numerical value" );
+        }
 
-      if ( $stmt = $this->dbh->query($insLog) ) {
-          return true;
-      }
+        try {
+            $stmt = $this->dbh->prepare("INSERT INTO asset_history (asset, comment, updated_by, updated_time) VALUES (:asset, :comment, :user, NOW())");
 
-      return false;
+            $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
+            $stmt->bindParam(':comment', $comment, PDO::PARAM_STR);
+            $stmt->bindParam(':user', $user, PDO::PARAM_STR);
 
-  	}
-} // EOM DbHandler()
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return true;
+
+    } // EOM insertComment()
+
+    /**
+     * Retrieve log comments for a given asset
+     */
+    function getComments($asset)
+    {
+        if ( ! is_numeric( $asset ) ) {
+          throw new Exception( "Asset '$asset' is not a numerical value" );
+        }
+
+        try {
+            $stmt = $this->dbh->prepare("SELECT comment, updated_by, updated_time FROM asset_history WHERE asset = :asset ORDER BY updated_time");
+            $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
+
+            if ( $stmt->execute() ) {
+                return $stmt->fetchAll();
+            }
+        } catch (Exception $e) {
+          throw new Exception($e->getMessage);
+        }
+    }
+} // EOC DbHandler()
 
 ?>

@@ -33,7 +33,8 @@ class Authenticate {
         // Read the configuration file
         if (!$settings = parse_ini_file( $configfile, true)) throw new Exception("Unable to open the configuration file '$configfile'");
 
-        $this->dbname   = $settings['database']['schema'];
+        $this->dbname   = $settings['database']['dbname'];
+        $this->dbschema = $settings['database']['schema'];
         $this->dbuser   = $settings['database']['username'];
         $this->dbpasswd = $settings['database']['password'];
         $this->dbhost   = $settings['database']['host'];
@@ -45,6 +46,15 @@ class Authenticate {
             $this->dbh = new PDO( $dsn, $this->dbuser, $this->dbpasswd );
         } catch (PDOException $e) {
             throw new Exception( $e->getMessage() );
+        }
+
+	// If we are using PostgreSQL, set schema
+	if ( $type == "pgsql" ) {
+	    try {
+                $this->dbh->exec("SET search_path TO " . $schema);
+            } catch (PDOException $e) {
+                throw new Exception( $e->getMessage() );
+            }
         }
 
     } // EOM __construct()

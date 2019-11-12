@@ -26,25 +26,21 @@ class AdminUtils {
     private $dbpasswd;
     private $dbtype;
     private $dbhost;
+    private $dbschema;
 
-    function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost" )
+    function __construct( $name, $user, $passwd, $type = "mysql", $host = "localhost", $schema = "" )
     {
 
         // Read the configuration file
         if (!$settings = parse_ini_file("config/config.ini.php", true)) throw new Exception("Unable to open the configuration file 'config/config.ini'");
 
-        $this->dbname   = $settings['database']['schema'];
+        $this->dbname   = $settings['database']['dbname'];
         $this->dbuser   = $settings['database']['username'];
         $this->dbpasswd = $settings['database']['password'];
+	$this->dbschema = $settings['database']['schema'];
         $this->dbhost   = $settings['database']['host'];
         $this->dbtype   = $settings['database']['driver'];
-/*
-        $this->dbname   = $name;
-        $this->dbuser   = $user;
-        $this->dbpasswd = $passwd;
-        $this->dbtype   = $type;
-        $this->dbhost   = $host;
-*/
+
         // Connect to the database
         $dsn = $this->dbtype . ":dbname=" . $this->dbname . ";host=" . $this->dbhost;
         try {
@@ -53,7 +49,15 @@ class AdminUtils {
             throw new Exception( $e->getMessage() );
         }
 
-        //return $this->dbh;
+
+	// If we are using PostgreSQL, set schema
+        if ( $type == "pgsql" ) {
+            try {
+                $this->dbh->exec("SET search_path TO " . $schema);
+            } catch (PDOException $e) {
+                throw new Exception( $e->getMessage() );
+            }
+        }
 
     } // EOM __construct()
 
@@ -132,7 +136,7 @@ class AdminUtils {
     {
         $lastId = false;
         try {
-            $stmt = $this->dbh->prepare("INSERT INTO category (id, category, description, entry_created, entry_created_by) VALUES (NULL, :category, :description, NOW(), :username)");
+            $stmt = $this->dbh->prepare("INSERT INTO category (category, description, entry_created, entry_created_by) VALUES (:category, :description, NOW(), :username)");
             $stmt->bindParam(':category', $category);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':username', $username);
@@ -142,10 +146,8 @@ class AdminUtils {
             $lastId = $this->dbh->lastInsertId();
 
             $stmt->debugDumpParams();
-            echo "<br/>Supplier: " . $supplier . "<br/>\n";
+            echo "<br/>Category: " . $category . "<br/>\n";
             echo "Description: " . $description . "<br/>\n";
-            echo "Website   : " . $website . "<br/>\n";
-            echo "Username  : " . $username . "<br/>\n";
             $this->dbh->commit();
         } catch(PDOException $e) {
             $this->dbh->rollback();
