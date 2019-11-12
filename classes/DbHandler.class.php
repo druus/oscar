@@ -435,26 +435,51 @@ EOQ;
      * Insert a comment into the history table
      */
     function insertComment()
-  	{
-  		$asset = $this->getasset();
-  		$comment = $this->getcomment();
-  		$user = $this->getuser();
+    {
+        $asset = $this->getasset();
+        $comment = $this->getcomment();
+        $user = $this->getuser();
 
-  		// Construct an INSERT statement
-  		$insLog = "INSERT INTO asset_history ";
-  		$insLog .= "(asset, comment, updated_by, updated_time) ";
-  		$insLog .= "VALUES ('" . $asset . "', ";
-  		$insLog .= "'" . $comment . "', ";
-  		$insLog .= "'" . $user . "', ";
-  		$insLog .= "NOW()) ";
+        if ( ! is_numeric( $asset ) ) {
+            throw new Exception( "Asset '$asset' is not a numerical value" );
+        }
 
-      if ( $stmt = $this->dbh->query($insLog) ) {
-          return true;
-      }
+        try {
+            $stmt = $this->dbh->prepare("INSERT INTO asset_history (asset, comment, updated_by, updated_time) VALUES (:asset, :comment, :user, NOW())");
 
-      return false;
+            $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
+            $stmt->bindParam(':comment', $comment, PDO::PARAM_STR);
+            $stmt->bindParam(':user', $user, PDO::PARAM_STR);
 
-  	}
-} // EOM DbHandler()
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return true;
+
+    } // EOM insertComment()
+
+    /**
+     * Retrieve log comments for a given asset
+     */
+    function getComments($asset)
+    {
+        if ( ! is_numeric( $asset ) ) {
+          throw new Exception( "Asset '$asset' is not a numerical value" );
+        }
+
+        try {
+            $stmt = $this->dbh->prepare("SELECT comment, updated_by, updated_time FROM asset_history WHERE asset = :asset ORDER BY updated_time");
+            $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
+
+            if ( $stmt->execute() ) {
+                return $stmt->fetchAll();
+            }
+        } catch (Exception $e) {
+          throw new Exception($e->getMessage);
+        }
+    }
+} // EOC DbHandler()
 
 ?>

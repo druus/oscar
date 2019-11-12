@@ -2,17 +2,17 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
-** Version      0.5.0
+** Version      0.5.1
 ** Created by   Daniel Ruus
 ** Created      ??
-** Modified     2019-11-07
+** Modified     2019-11-11
 ** Modified by  Daniel Ruus
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.5.0";
+$APP_VERSION="0.5.1";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2019-11-07";
+$APP_MODIFIED="2019-11-11";
 
 session_start();
 
@@ -192,6 +192,7 @@ switch ($values['cmd'])
         //$assetData = $utils->getAssetData( $asset );
 	      $assetData = $dbh->getAssetData( $asset );
         $poItems   = $dbh->getPOItems( $asset );
+        $logMessages = $dbh->getComments( $asset );
         if ( sizeof( $poItems ) > 0 ) { $poItemsExists = true; } else { $poItemsExists = false; }
         $template = $twig->loadTemplate('asset_form.tmpl');
         $cfgData['cmd'] = "UpdateAssetEntry";
@@ -204,6 +205,7 @@ switch ($values['cmd'])
             'departments'=> $depArray,
             'suppliers'  => $supArray,
             'clients'    => $arClients,
+            'logMessages'=> $logMessages,
             'cfgData'    => $cfgData
         ) );
         break;
@@ -253,7 +255,13 @@ switch ($values['cmd'])
             $dbh->updateAsset( $asset, $values, $_SESSION['username'] );
             $dbh->setasset( $asset );
 						$dbh->setuser( $_SESSION['username'] );
-						$dbh->setcomment( 'Asset modified' );
+
+            // Do we have a log message? If not, use a default one
+            if ( isset($values['asset_log_message']) && strlen($values['asset_log_message']) > 1 ) {
+              $dbh->setcomment( $values['asset_log_message']);
+            } else {
+						        $dbh->setcomment( 'Asset modified' );
+            }
 						$dbh->insertComment();
             /*
 						$utils->setasset( $asset );
