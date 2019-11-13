@@ -329,21 +329,35 @@
 </div> {# End <div class="container..." #}
 
 {# Display log messages for the asset #}
-<div class="row">
-<table>
-<tr>
-  <td>Log message</td>
-  <td>Entered by</td>
-  <td>Updated</td>
-</tr>
-{% for logMessage in logMessages %}
-<tr>
-  <td>{{ logMessage.comment }}</td>
-  <td>{{ logMessage.updated_by }}</td>
-  <td>{{ logMessage.updated_time }}</td>
-</tr>
-{% endfor %}
-</table>
+<div class="container">
+
+  <div class="form-inline">
+    <div class="col-sm-12">
+
+    <div class="table-responsive">
+    <table class="table">
+    <thead>
+    <tr>
+      <th>Log message</td>
+      <th>Entered by</td>
+      <th>Updated</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for logMessage in logMessages %}
+    <tr>
+      <td>{{ logMessage.comment }}</td>
+      <td>{{ logMessage.updated_by }}</td>
+      <td>{{ logMessage.updated_time }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+
+  </div>
+  </div>
+
 </div>
 
 

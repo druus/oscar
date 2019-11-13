@@ -335,17 +335,6 @@ EOQ;
 
         $searchAsset .= "ORDER BY " . $list_order;
 
-/*
-        $utildb = $this->getdb();
-        $res = $utildb->execute( $searchAsset );
-        if ( $res == false ) {
-            echo "ERROR: " . $this->getdb()->error;
-        } else {
-            return $res->fetch_all(MYSQLI_ASSOC);
-        }
-*/
-
-	#print "SQL-statement: " . $searchAsset . "<br/>\n"; die();
 
 	// Run the query
 	try {
@@ -384,14 +373,73 @@ EOQ;
         $po_number    = $values['po_number'];
         $manuf_invoice= $values['manuf_invoice'];
 
-        $query = "INSERT INTO asset (productcode, manufacturer, model, description, long_description, introduced, serial, category, status, owner_dep, client, supplier, supplier_artno, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by) ";
-        $query .= "VALUES ('". $productcode . "', '" . $manufacturer . "', '" . $model . "', '" . $description . "', '" . $long_description . "', '" . $introduced . "', '" . $serial . "', " . $category . ", " . $status . ", " . $owner_dep . ", " . $client . ", " . $supplier . ", '" . $supplier_artno . "', '" . $barcode . "', '". $po_number . "', '" . $manuf_invoice . "', NOW(), '" . $username . "')";
-
-        if ( $stmt = $this->dbh->query($query) ) {
-            return $this->dbh->lastInsertId();
+        // If no PO number has been given, set it to 0
+        if ( !isset($po_number) || $po_number == "" ) {
+          $po_number = 0;
         }
 
-        return false;
+        $querytmp = "INSERT INTO asset (productcode, manufacturer, model, description, long_description, introduced, serial, category, status, owner_dep, client, supplier, supplier_artno, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by) ";
+        $querytmp .= "VALUES ('". $productcode . "', '" . $manufacturer . "', '" . $model . "', '" . $description . "', '" . $long_description . "', '" . $introduced . "', '" . $serial . "', " . $category . ", " . $status . ", " . $owner_dep . ", " . $client . ", " . $supplier . ", '" . $supplier_artno . "', '" . $barcode . "', ". $po_number . ", '" . $manuf_invoice . "', NOW(), '" . $username . "')";
+
+        if ($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+          $query = "INSERT INTO asset (productcode, manufacturer, model, description, long_description, introduced, serial, category, status, owner_dep, client, supplier, supplier_artno, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by) ";
+          $query .= "VALUES (:productcode, :manufacturer, :model, :description, :long_description, :introduced, :serial, :category, :status, ";
+          $query .= ":owner_dep, :client, :supplier, :supplier_artno, :barcode, :po_number, :manuf_invoice, NOW(), :username) ";
+          $query .= "RETURNING asset";
+        } else {
+          $query = "INSERT INTO asset (productcode, manufacturer, model, description, long_description, introduced, serial, category, status, owner_dep, client, supplier, supplier_artno, barcode, po_number, manuf_invoice, asset_entry_created, asset_entry_created_by) ";
+          $query .= "VALUES (:productcode, :manufacturer, :model, :description, :long_description, :introduced, :serial, :category, :status, ";
+          $query .= ":owner_dep, :client, :supplier, :supplier_artno, :barcode, :po_number, :manuf_invoice, NOW(), :username)";
+        }
+
+        #print $querytmp; die();
+
+
+            $stmt = $this->dbh->prepare( $query );
+
+            $stmt->bindParam(':productcode', $productcode, PDO::PARAM_STR);
+            $stmt->bindParam(':manufacturer', $manufacturer, PDO::PARAM_STR);
+            $stmt->bindParam(':model', $model, PDO::PARAM_STR);
+            $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+            $stmt->bindParam(':long_description', $long_description, PDO::PARAM_STR);
+            $stmt->bindParam(':introduced', $introduced, PDO::PARAM_STR);
+            $stmt->bindParam(':serial', $serial, PDO::PARAM_STR);
+            $stmt->bindParam(':category', $category, PDO::PARAM_INT);
+            $stmt->bindParam(':status', $status, PDO::PARAM_INT);
+            $stmt->bindParam(':owner_dep', $owner_dep, PDO::PARAM_INT);
+            $stmt->bindParam(':client', $client, PDO::PARAM_INT);
+            $stmt->bindParam(':supplier', $supplier, PDO::PARAM_INT);
+            $stmt->bindParam(':supplier_artno', $supplier_artno, PDO::PARAM_STR);
+            $stmt->bindParam(':barcode', $barcode, PDO::PARAM_STR);
+            $stmt->bindParam(':po_number', $po_number, PDO::PARAM_INT);
+            $stmt->bindParam(':manuf_invoice', $manuf_invoice, PDO::PARAM_STR);
+            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+
+          try {
+            if ( ! $stmt->execute() ) {
+              $errorCode = $stmt->errorInfo();
+              throw new Exception($errorCode[2]); // Return error message
+            }
+
+
+
+            if ($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+              $tmpVal = $stmt->fetchAll();
+              $tmpVal2 = $tmpVal[0][0];
+              $lastInsertedId = $tmpVal2;
+            } else {
+               $lastInsertedId = $this->dbh->lastInsertId('asset_id_seq');
+            }
+
+
+        } catch (PDOException $pe) {
+            throw new Exception($pe->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
+
+        return $lastInsertedId;
 
     } // EOM createAsset()
 
@@ -420,7 +468,7 @@ EOQ;
             $po_number    = $values['po_number'];
             $manuf_invoice= $values['manuf_invoice'];
 
-            $query = "UPDATE asset SET productcode = '" . $productcode . "', manufacturer = '" . $manufacturer . "', model = '" . $model . "', description = '" . $description . "', long_description = '" . $long_description . "', introduced = '" . $introduced . "', serial = '" . $serial . "', category = " . $category . ", status = " . $status . ", owner_dep = " . $owner_dep . ", supplier = " . $supplier . ", supplier_artno = '" . $supplier_artno . "', client = " . $client . ", barcode = '" . $barcode . "', po_number = '" . $po_number . "', manuf_invoice = '" . $manuf_invoice . "', asset_modified = NOW(), asset_modified_by = '" . $username . "' WHERE asset = " . $asset;
+            $query = "UPDATE asset SET productcode = '" . $productcode . "', manufacturer = '" . $manufacturer . "', model = '" . $model . "', description = '" . $description . "', long_description = '" . $long_description . "', introduced = '" . $introduced . "', serial = '" . $serial . "', category = " . $category . ", status = " . $status . ", owner_dep = " . $owner_dep . ", supplier = " . $supplier . ", supplier_artno = '" . $supplier_artno . "', client = " . $client . ", barcode = '" . $barcode . "', po_number = " . $po_number . ", manuf_invoice = '" . $manuf_invoice . "', asset_modified = NOW(), asset_modified_by = '" . $username . "' WHERE asset = " . $asset;
 
             if ( $stmt = $this->dbh->query($query) ) {
                 return true;
@@ -445,18 +493,30 @@ EOQ;
         }
 
         try {
-            $stmt = $this->dbh->prepare("INSERT INTO asset_history (asset, comment, updated_by, updated_time) VALUES (:asset, :comment, :user, NOW())");
+            if ($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+              $stmt = $this->dbh->prepare("INSERT INTO asset_history (asset, comment, updated_by, updated_time) VALUES (:asset, :comment, :user, NOW()) RETURNING hid");
+            } else {
+              $stmt = $this->dbh->prepare("INSERT INTO asset_history (asset, comment, updated_by, updated_time) VALUES (:asset, :comment, :user, NOW())");
+            }
 
             $stmt->bindParam(':asset', $asset, PDO::PARAM_INT);
             $stmt->bindParam(':comment', $comment, PDO::PARAM_STR);
             $stmt->bindParam(':user', $user, PDO::PARAM_STR);
 
             $stmt->execute();
+
+            if ($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+              $tmpVal = $stmt->fetchAll();
+              $tmpVal2 = $tmpVal[0][0];
+              $lastInsertedId = $tmpVal2;
+            } else {
+               $lastInsertedId = $this->dbh->lastInsertId('asset_id_seq');
+            }
         } catch (PDOException $e) {
             throw new Exception($e->getMessage());
         }
 
-        return true;
+        return $lastInsertedId;
 
     } // EOM insertComment()
 
