@@ -2,17 +2,17 @@
 /******************************************************************************
 ** Filename     index.php
 ** Description  Main entry point
-** Version      0.5.1
+** Version      0.5.2
 ** Created by   Daniel Ruus
 ** Created      ??
-** Modified     2019-11-11
+** Modified     2019-11-13
 ** Modified by  Daniel Ruus
 ** License      The MIT License (MIT) (See the file LICENSE)
 ** Copyright (c) 2015, 2016, 2017, 2018, 2019 Daniel Ruus
 ******************************************************************************/
-$APP_VERSION="0.5.1";
+$APP_VERSION="0.5.2";
 $APP_AUTHOR="Daniel Ruus";
-$APP_MODIFIED="2019-11-11";
+$APP_MODIFIED="2019-11-13";
 
 session_start();
 
@@ -190,8 +190,8 @@ switch ($values['cmd'])
     case "Edit":
         $asset = $values['asset'];
         //$assetData = $utils->getAssetData( $asset );
-	      $assetData = $dbh->getAssetData( $asset );
-        $poItems   = $dbh->getPOItems( $asset );
+	$assetData   = $dbh->getAssetData( $asset );
+        $poItems     = $dbh->getPOItems( $asset );
         $logMessages = $dbh->getComments( $asset );
         if ( sizeof( $poItems ) > 0 ) { $poItemsExists = true; } else { $poItemsExists = false; }
         $template = $twig->loadTemplate('asset_form.tmpl');
@@ -227,11 +227,19 @@ switch ($values['cmd'])
     case "CreateAsset":
         //$asset = $utils->createAsset( $values, $_SESSION['username'] );
         $asset = $dbh->createAsset( $values, $_SESSION['username'] );
+        print "New asset: " . $asset;
         if ( $asset > 0 ) {
             $assetData = $dbh->getAssetData( $asset, $_SESSION['username'] );
             $dbh->setasset( $asset );
             $dbh->setuser( $_SESSION['username'] );
-            $dbh->setcomment( 'Asset created' );
+
+            // Do we have a log message? If not, use a default one
+            if ( isset($values['asset_log_message']) && strlen($values['asset_log_message']) > 1 ) {
+              $dbh->setcomment( $values['asset_log_message']);
+            } else {
+						        $dbh->setcomment( 'Asset created' );
+            }
+
             $dbh->insertComment();
         }
         $template = $twig->loadTemplate('asset_form.tmpl');
@@ -262,6 +270,7 @@ switch ($values['cmd'])
             } else {
 						        $dbh->setcomment( 'Asset modified' );
             }
+
 						$dbh->insertComment();
             /*
 						$utils->setasset( $asset );
