@@ -326,10 +326,10 @@
     </div>
   </div>
 
-</div> {# End <div class="container..." #}
+</div> {# End <div> #}
 
 {# Display log messages for the asset #}
-<div class="container">
+<div class="row">
 
   <div class="form-inline">
     <div class="col-sm-12">
@@ -338,19 +338,23 @@
     <table class="table">
     <thead>
     <tr>
-      <th>Log message</td>
-      <th>Entered by</td>
-      <th>Updated</td>
+      <th>Log message</th>
+      <th>Entered by</th>
+      <th>Updated</th>
     </tr>
     </thead>
     <tbody>
+
     {% for logMessage in logMessages %}
+
     <tr>
       <td>{{ logMessage.comment }}</td>
       <td>{{ logMessage.updated_by }}</td>
       <td>{{ logMessage.updated_time }}</td>
     </tr>
+
     {% endfor %}
+
     </tbody>
     </table>
     </div>
@@ -360,5 +364,6 @@
 
 </div>
 
+</div> {# End div container (top) #}
 
 {% include 'footer.tmpl' %}
