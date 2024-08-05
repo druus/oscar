@@ -245,7 +245,7 @@ class AdminUtils {
     {
         $lastId = false;
         try {
-            $stmt = $this->dbh->prepare("INSERT INTO suppliers (supp_id, supplier, description, website, entry_created, entry_created_by) VALUES (NULL, :supplier, :description, :website, NOW(), :username)");
+            $stmt = $this->dbh->prepare("INSERT INTO suppliers (supplier, description, website, entry_created, entry_created_by) VALUES (:supplier, :description, :website, NOW(), :username)");
             $stmt->bindParam(':supplier', $supplier);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':website', $website);
